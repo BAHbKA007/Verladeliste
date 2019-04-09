@@ -42,13 +42,14 @@
       </v-dialog>
     </v-toolbar>
     <v-data-table
-      :headers="headers"
-      :items="Artikel"
-      class="elevation-1"
-      :rows-per-page-items="pagination"
-      rows-per-page-text='Artikel pro Seite'
-      :search="search"
-      loading="true"
+   
+        :headers="headers"
+        :items="Artikel"
+        class="elevation-1"
+        :rows-per-page-items="pagination"
+        rows-per-page-text='Artikel pro Seite'
+        :search="search"
+        :loading="loading"
     >
       <template v-slot:items="props">
 
@@ -68,9 +69,6 @@
             delete
           </v-icon>
         </td>
-      </template>
-      <template v-slot:no-data>
-        <v-btn color="primary" @click="initialize">neu Laden</v-btn>
       </template>
     </v-data-table>
         <v-snackbar
@@ -98,6 +96,7 @@ import axios from 'axios';
 
   export default {
     data: () => ({
+        loading: 'info',
         search: '',
         pagination: [50,100,250,{"text":"$vuetify.dataIterator.rowsPerPageAll","value":-1}],
         dialog: false,
@@ -139,8 +138,10 @@ import axios from 'axios';
     methods: {
         initialize () {
             axios.get('http://api.test/api/artikel')
-            .then(res => this.Artikel = res.data)
+            .then(res => this.Artikel = res.data,)
             .catch(err => console.log(err));
+            this.loading = false
+
         },
 
         editItem (item) {
@@ -167,8 +168,28 @@ import axios from 'axios';
 
         save () {
             if (this.editedIndex > -1) {
-            Object.assign(this.Artikel[this.editedIndex], this.editedItem)
-            console.log('erste');
+                // Bearbeiten
+                axios.put('http://api.test/api/artikel',{
+                    id: this.editedItem.id,
+                    name: this.editedItem.name
+                })
+                .then(
+                    resp => {
+                        if (resp.status === 200){
+                            this.snack_text = 'Artikel erfolgreich geändert',
+                            this.snack_color = 'success',
+                            this.snackbar = true
+                        } 
+                        }
+                    )
+                .catch(
+                    err => {
+                        this.snack_text = 'Da hat etwas nicht funktioniert :(',
+                        this.snack_color = 'error',
+                        this.snackbar = true}
+                    );
+
+                Object.assign(this.Artikel[this.editedIndex], this.editedItem)
             } else {
             axios.post('http://api.test/api/artikel',{
                 name: this.editedItem.name
@@ -195,3 +216,9 @@ import axios from 'axios';
     }
 }
 </script>
+
+<style scoped>
+table.v-table tbody td, table.v-table tbody th {
+    height: 30px;
+}
+</style>
