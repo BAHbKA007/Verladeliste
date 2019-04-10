@@ -3,6 +3,7 @@
     <v-toolbar flat>
         <v-text-field
             v-model="search"
+            :search-input.sync="search"
             prepend-icon="search"
             label="Wareneingang suchen"
             single-line
@@ -30,20 +31,50 @@
                     <v-container grid-list-md>
                     <v-layout wrap>
                         <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.produkt" label="Produkt" required :rules="rules"></v-text-field>
+                            <v-autocomplete
+                                v-model="editedItem.produkt"
+                                required 
+                                :rules="rules"
+                                :label="'Produkt'"
+                                :items="items_artikel"
+                                :search-input.sync="search_api_artikel"
+                                item-text="name"
+                                hide-no-data
+                            >
+                                <template v-slot:item="{ item }">
+                                <v-list-tile-content>
+                                    <v-list-tile-title v-text="item.name"></v-list-tile-title>
+                                </v-list-tile-content>
+                                </template>
+                            </v-autocomplete>
                         </v-flex>
                         <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.gebinde" label="Gebinde"></v-text-field>
+                            <v-autocomplete
+                                v-model="editedItem.gebinde"
+                                required 
+                                :rules="rules"
+                                :label="'Gebinde'"
+                                :items="items_gebinde"
+                                :search-input.sync="search_api_gebinde"
+                                item-text="name"
+                                hide-no-data
+                            >
+                                <template v-slot:item="{ item }">
+                                <v-list-tile-content>
+                                    <v-list-tile-title v-text="item.name"></v-list-tile-title>
+                                </v-list-tile-content>
+                                </template>
+                            </v-autocomplete>
                         </v-flex>
                         <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.menge" label="Menge" type="number"></v-text-field>
+                            <v-text-field v-model="editedItem.menge" label="Menge" type="number" min="0" step="0.01"></v-text-field>
                         </v-flex>
 
                         <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.lieferant" label="Lieferant" :rules="rules"></v-text-field>
+                            <v-text-field v-model="editedItem.lieferant" label="Lieferant" :rules="rules"></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.paletten" label="Paletten" type="number"></v-text-field>
+                            <v-text-field v-model="editedItem.paletten" label="Paletten" type="number" min="0" step="0.01"></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6 md4>
                         <v-text-field v-model="editedItem.preis" label="Preis" type="number" text-align="end" prepend-icon="euro_symbol"></v-text-field>
@@ -200,21 +231,17 @@ import axios from 'axios';
 
   export default {
     data: () => ({
-        // Produkt Autocomplete
-        descriptionLimit: 60,
-        entries: [],
-        isLoading: false,
-        model: null,
+        search_api_artikel: null,
+        search_api_gebinde: null,
+        items_artikel: [],
+        items_gebinde: [],
         search: null,
-
-
         valid: false,
         on: false,
         date: new Date().toISOString().substr(0, 10),
         menu1: false,
         menu2: false,
-        loading: 'info',
-        search: '',
+        loading: false,
         pagination: [200,500,1000,{"text":"$vuetify.dataIterator.rowsPerPageAll","value":-1}],
         dialog: false,
         headers: [
@@ -245,64 +272,50 @@ import axios from 'axios';
         mode: 'multi-line',
         timeout: 6000,
         rules: [
-           v => !!v || 'Darf nicht leer sein'
+           v => !!v || 'Feld darf nicht leer sein'
         ]
     }),
 
     computed: {
         formTitle () {
             return this.editedIndex === -1 ? 'Neuen Wareneingang anlegen' : 'Wareneingang bearbeiten'
-        },
-
-        // Produkt AUtocomplete
-        fields () {
-            if (!this.model) return []
-
-            return Object.keys(this.model).map(key => {
-            return {
-                key,
-                value: this.model[key] || 'n/a'
-            }
-            })
-        },
-        items () {
-            return this.entries.map(entry => {
-            const Description = entry.Description.length > this.descriptionLimit
-                ? entry.Description.slice(0, this.descriptionLimit) + '...'
-                : entry.Description
-
-            return Object.assign({}, entry, { Description })
-            })
         }
     },
 
     watch: {
-        dialog (val) {
-            val || this.close()
-        },
-
-        // Produkt Autocomplete
-        search (val) {
+        search_api_artikel (val) {
             // Items have already been loaded
-            if (this.items.length > 0) return
-
-            // Items have already been requested
-            if (this.isLoading) return
-
+            if (this.items_artikel.length > 0) return
             this.isLoading = true
-
             // Lazily load input items
-            fetch('https://api.publicapis.org/entries')
+            fetch(this.api_link + 'artikel')
             .then(res => res.json())
             .then(res => {
-                const { count, entries } = res
-                this.count = count
-                this.entries = entries
+                this.items_artikel = res
             })
             .catch(err => {
                 console.log(err)
             })
             .finally(() => (this.isLoading = false))
+        },
+
+        search_api_gebinde (val) {
+            // Items have already been loaded
+            if (this.items_gebinde.length > 0) return
+            this.isLoading = true
+            // Lazily load input items
+            fetch(this.api_link+'gebinde')
+            .then(res => res.json())
+            .then(res => {
+                this.items_gebinde = res
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            .finally(() => (this.isLoading = false))
+        },        
+        dialog (val) {
+            val || this.close()
         }
     },
 
@@ -312,14 +325,18 @@ import axios from 'axios';
 
     methods: {
         nullen_schneiden(vari) {
-            var vari_arr = vari.split('.');
-            if (vari_arr[1] === '00') {
-                vari = vari_arr[0]
+            if (vari) {
+                var vari_arr = vari.split('.');
+                if (vari_arr[1] === '00') {
+                    vari = vari_arr[0]
+                }
             }
             return vari
         },
         punkt_zu_komma(vari){
-            var v= vari.replace('.',',')
+            if (vari) {
+                var v= vari.replace('.',',')
+            }
             return v
         },
         check_var_undifined (vari) {
@@ -329,8 +346,11 @@ import axios from 'axios';
             return vari
         },
         show_de_date (date) {
-            var splited = date.split('-');
-            return splited[2] + '.' + splited[1] + '.' + splited[0]
+            if (date) {
+                var splited = date.split('-');
+                date = splited[2] + '.' + splited[1] + '.' + splited[0]
+            }
+            return date
         },
         initialize () {
             axios.get(this.api_link+'we')
