@@ -3,10 +3,11 @@
     <v-toolbar flat>
         <v-text-field
             v-model="search"
-            append-icon="search"
-            label="Gebinde suchen"
+            prepend-icon="search"
+            label="Wareneingang suchen"
             single-line
             hide-details
+            clearable
         ></v-text-field>
       <v-divider
         class="mx-2"
@@ -136,7 +137,7 @@ import axios from 'axios';
 
     methods: {
         initialize () {
-            axios.get('http://api.test/api/gebinde')
+            axios.get(this.api_link+'gebinde')
             .then(res => this.Gebinde = res.data)
             .catch(err => console.log(err));
         },
@@ -150,7 +151,7 @@ import axios from 'axios';
         deleteItem (item) {
             const index = this.Gebinde.indexOf(item)
             confirm('Gebinde löschen?') && this.Gebinde.splice(index, 1)
-            axios.delete('http://api.test/api/gebinde/'+item.id)
+            axios.delete(this.api_link+'gebinde/'+item.id)
             .then()
             .catch(err => console.log(err));
         },
@@ -166,7 +167,7 @@ import axios from 'axios';
         save () {
             if (this.editedIndex > -1) {
                 // Bearbeiten
-                axios.put('http://api.test/api/gebinde',{
+                axios.put(this.api_link+'gebinde',{
                     id: this.editedItem.id,
                     name: this.editedItem.name
                 })
@@ -188,7 +189,7 @@ import axios from 'axios';
 
                 Object.assign(this.Gebinde[this.editedIndex], this.editedItem)
             } else {
-            axios.post('http://api.test/api/gebinde',{
+            axios.post(this.api_link+'gebinde',{
                 name: this.editedItem.name
             })
             .then(
@@ -197,7 +198,7 @@ import axios from 'axios';
                         this.snack_text = 'Gebinde erfolgreich hinzugefügt',
                         this.snack_color = 'success',
                         this.snackbar = true,
-                        this.Gebinde.unshift(this.editedItem)
+                        this.initialize()
                     } 
                     }
                 )
@@ -210,6 +211,9 @@ import axios from 'axios';
             }
             this.close()
         }
+    },
+    props: {
+      api_link: String
     }
 }
 </script>

@@ -3,7 +3,7 @@
     <Toolbar app></Toolbar>
     <v-content>
       <v-container fluid>
-        <router-view></router-view>
+        <router-view :api_link='api_link'></router-view>
       </v-container>
     </v-content>
     <v-footer app>            
@@ -29,7 +29,8 @@ export default {
   components: {Toolbar},
   data()  {
     return {
-      dark: false
+      dark: false,
+      api_link: 'http://localhost/verladeliste-api/public/api/'
     }
   }
 }

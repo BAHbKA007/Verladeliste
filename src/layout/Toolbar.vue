@@ -29,7 +29,7 @@
                 </v-list-tile>
 
                 <v-list-tile router to="/Lieferant">
-                    <v-list-tile-title>Lieferant</v-list-tile-title>
+                    <v-list-tile-title>Lieferanten</v-list-tile-title>
                 </v-list-tile>                         
             </v-list>
         </v-menu>
