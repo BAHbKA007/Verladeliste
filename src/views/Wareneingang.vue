@@ -71,13 +71,28 @@
                         </v-flex>
 
                         <v-flex xs12 sm6 md4>
-                            <v-text-field v-model="editedItem.lieferant" label="Lieferant" :rules="rules"></v-text-field>
+                            <v-autocomplete
+                                v-model="editedItem.lieferant"
+                                required 
+                                :rules="rules"
+                                :label="'Lieferant'"
+                                :items="items_lieferant"
+                                :search-input.sync="search_api_lieferant"
+                                item-text="name"
+                                hide-no-data
+                            >
+                                <template v-slot:item="{ item }">
+                                <v-list-tile-content>
+                                    <v-list-tile-title v-text="item.name"></v-list-tile-title>
+                                </v-list-tile-content>
+                                </template>
+                            </v-autocomplete>
                         </v-flex>
                         <v-flex xs12 sm6 md4>
                             <v-text-field v-model="editedItem.paletten" label="Paletten" type="number" min="0" step="0.01"></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.preis" label="Preis" type="number" text-align="end" prepend-icon="euro_symbol"></v-text-field>
+                            <v-text-field v-model="editedItem.preis" label="Preis" type="number" prepend-icon="euro_symbol"></v-text-field>
                         </v-flex>
 
                         <!-- Verladedatum -->
@@ -143,13 +158,28 @@
                         </v-flex>
 
                         <v-flex xs12 sm6 md4>
-                        <v-text-field v-model="editedItem.entladung" label="Entladung" :rules="rules"></v-text-field>
+                            <v-autocomplete
+                                v-model="editedItem.entladung"
+                                required 
+                                :rules="rules"
+                                :label="'Entladung'"
+                                :items="items_entladung"
+                                :search-input.sync="search_api_entladung"
+                                item-text="name"
+                                hide-no-data
+                            >
+                                <template v-slot:item="{ item }">
+                                <v-list-tile-content>
+                                    <v-list-tile-title v-text="item.name"></v-list-tile-title>
+                                </v-list-tile-content>
+                                </template>
+                            </v-autocomplete>
                         </v-flex>
 
                         <v-flex xs12 sm6 md6>
-                        <v-text-field v-model="editedItem.we_nr" label="WE-Nummer"></v-text-field>
+                            <v-text-field v-model="editedItem.we_nr" label="WE-Nummer"></v-text-field>
                         </v-flex>
-                        <v-flex xs12 sm6 md6>
+                            <v-flex xs12 sm6 md6>
                         <v-text-field v-model="editedItem.ls_nr" label="LS-Nummer"></v-text-field>
                         </v-flex>
 
@@ -233,8 +263,12 @@ import axios from 'axios';
     data: () => ({
         search_api_artikel: null,
         search_api_gebinde: null,
+        search_api_entladung: null,
+        search_api_lieferant: null,
+        items_lieferant: [],
         items_artikel: [],
         items_gebinde: [],
+        items_entladung: [],
         search: null,
         valid: false,
         on: false,
@@ -299,6 +333,22 @@ import axios from 'axios';
             .finally(() => (this.isLoading = false))
         },
 
+        search_api_lieferant (val) {
+            // Items have already been loaded
+            if (this.items_lieferant.length > 0) return
+            this.isLoading = true
+            // Lazily load input items
+            fetch(this.api_link + 'lieferant')
+            .then(res => res.json())
+            .then(res => {
+                this.items_lieferant = res
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            .finally(() => (this.isLoading = false))
+        },
+
         search_api_gebinde (val) {
             // Items have already been loaded
             if (this.items_gebinde.length > 0) return
@@ -313,7 +363,24 @@ import axios from 'axios';
                 console.log(err)
             })
             .finally(() => (this.isLoading = false))
-        },        
+        },     
+
+        search_api_entladung (val) {
+            // Items have already been loaded
+            if (this.items_entladung.length > 0) return
+            this.isLoading = true
+            // Lazily load input items
+            fetch(this.api_link+'entladung')
+            .then(res => res.json())
+            .then(res => {
+                this.items_entladung = res
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            .finally(() => (this.isLoading = false))
+        },     
+
         dialog (val) {
             val || this.close()
         }

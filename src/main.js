@@ -6,7 +6,10 @@ import 'vuetify/dist/vuetify.min.css'
 // Translation provided by Vuetify (typescript)
 import de from 'vuetify/src/locale/de.ts'
 import router from './router'
+import CountryFlag from 'vue-country-flag'
 
+
+Vue.component('vue-country-flag', CountryFlag)
 Vue.use(Vuetify, {
   lang: {
     locales: {de},

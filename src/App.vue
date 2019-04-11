@@ -30,7 +30,7 @@ export default {
   data()  {
     return {
       dark: false,
-      api_link: 'http://localhost/verladeliste-api/public/api/'
+      api_link: 'http://192.168.178.21/verladeliste-api/public/api/'//'http://localhost/verladeliste-api/public/api/'
     }
   }
 }

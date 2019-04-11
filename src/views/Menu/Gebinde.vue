@@ -4,7 +4,7 @@
         <v-text-field
             v-model="search"
             prepend-icon="search"
-            label="Wareneingang suchen"
+            label="Gebinde suchen"
             single-line
             hide-details
             clearable
