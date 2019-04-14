@@ -204,7 +204,7 @@ import axios from 'axios';
                 )
             .catch(
                 err => (
-                    this.snack_text = 'Da hat etwas nicht funktioniert :(',
+                    this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                     this.snack_color = 'error',
                     this.snackbar = true)
                 );
@@ -219,7 +219,5 @@ import axios from 'axios';
 </script>
 
 <style scoped>
-table.v-table tbody td, table.v-table tbody th {
-    height: 30px;
-}
+
 </style>

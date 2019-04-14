@@ -18,15 +18,14 @@
       <v-spacer></v-spacer>
 
         <v-form ref="form" v-model="valid" lazy-validation>
-            <v-dialog v-model="dialog" max-width="50%" persistent >
+            <v-dialog v-model="dialog" max-width="60%" persistent >
                 <template v-slot:activator="{ on }">
-                <v-btn color="primary" dark class="mb-2" v-on="on">Neuen Wareneingang anlegen</v-btn>
+                    <v-btn color="primary" dark class="mb-2" v-on="on" @click="search_api">Neuen Wareneingang anlegen</v-btn>
                 </template>
                 <v-card>
                 <v-card-title>
                     <span class="headline">{{ formTitle }}</span>
                 </v-card-title>
-                    
                 <v-card-text>
                     <v-container grid-list-md>
                     <v-layout wrap>
@@ -37,7 +36,6 @@
                                 :rules="rules"
                                 :label="'Produkt'"
                                 :items="items_artikel"
-                                :search-input.sync="search_api_artikel"
                                 item-text="name"
                                 hide-no-data
                             >
@@ -55,7 +53,6 @@
                                 :rules="rules"
                                 :label="'Gebinde'"
                                 :items="items_gebinde"
-                                :search-input.sync="search_api_gebinde"
                                 item-text="name"
                                 hide-no-data
                             >
@@ -77,7 +74,6 @@
                                 :rules="rules"
                                 :label="'Lieferant'"
                                 :items="items_lieferant"
-                                :search-input.sync="search_api_lieferant"
                                 item-text="name"
                                 hide-no-data
                             >
@@ -164,7 +160,6 @@
                                 :rules="rules"
                                 :label="'Entladung'"
                                 :items="items_entladung"
-                                :search-input.sync="search_api_entladung"
                                 item-text="name"
                                 hide-no-data
                             >
@@ -192,6 +187,9 @@
                     <v-btn color="blue darken-1" flat @click="close">abbrechen</v-btn>
                     <v-btn color="blue darken-1" flat @click="save">speichern</v-btn>
                 </v-card-actions>
+                <template>
+                    <v-progress-linear height="2" style="margin-bottom:0" :indeterminate="isLoading"></v-progress-linear>
+                </template>
                 </v-card>
             </v-dialog>
         </v-form>
@@ -202,41 +200,44 @@
         :headers="headers"
         :items="Wareneingang"
         class="elevation-1"
-        :rows-per-page-items="pagination"
+        :rows-per-page-items="pagination_rows"
         rows-per-page-text='Wareneingangä pro Seite'
+        :pagination.sync="pagination"
         :search="search"
         :loading="loading"
     >
     <template v-slot:items="props">
-        <td class="pointer_td" @click="editItem(props.item)">{{ props.item.produkt }}</td>
-        <td class="pointer_td" @click="editItem(props.item)">{{ props.item.gebinde }}</td>
-        <td class="pointer_td" @click="editItem(props.item)">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
-        <td class="pointer_td" @click="editItem(props.item)">{{ props.item.menge }}</td>
-        <td class="pointer_td" @click="editItem(props.item)">{{ props.item.lieferant }}</td>
-        <td class="pointer_td" @click="editItem(props.item)">{{ punkt_zu_komma(props.item.preis) }}€</td>
-        <td class="pointer_td" @click="editItem(props.item)">{{ props.item.entladung }}</td>
-        <td class="pointer_td" @click="editItem(props.item)">{{ show_de_date(props.item.verladung) }}</td>
-        <td class="pointer_td" @click="editItem(props.item)">{{ show_de_date(props.item.ankunft) }}</td>
-        <td class="pointer_td" @click="editItem(props.item)">{{ props.item.we_nr }}</td>
-        <td class="pointer_td" @click="editItem(props.item)">{{ props.item.ls_nr }}</td>
-        <td class="justify-center layout px-0">
-        <v-icon
-            small
-            class="mr-2"
-            @click="editItem(props.item)"
-        >
-            edit
-        </v-icon>
-        <v-icon
-            small
-            @click="deleteItem(props.item)"
-        >
-            delete
-        </v-icon>
-        </td>
+        <tr class="pointer_td">
+            <td @click="editItem(props.item)">{{ props.item.produkt }}</td>
+            <td @click="editItem(props.item)">{{ props.item.gebinde }}</td>
+            <td @click="editItem(props.item)">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
+            <td @click="editItem(props.item)">{{ props.item.menge }}</td>
+            <td @click="editItem(props.item)">{{ props.item.lieferant }}</td>
+            <td @click="editItem(props.item)">{{ punkt_zu_komma(props.item.preis) }}€</td>
+            <td @click="editItem(props.item)">{{ props.item.entladung }}</td>
+            <td @click="editItem(props.item)">{{ show_de_date(props.item.verladung) }}</td>
+            <td @click="editItem(props.item)">{{ show_de_date(props.item.ankunft) }}</td>
+            <td @click="editItem(props.item)">{{ props.item.we_nr }}</td>
+            <td @click="editItem(props.item)">{{ props.item.ls_nr }}</td>
+            <td class="justify-center layout px-0">
+            <v-icon
+                small
+                class="mr-2"
+                @click="editItem(props.item)"
+            >
+                edit
+            </v-icon>
+            <v-icon
+                small
+                @click="deleteItem(props.item)"
+            >
+                delete
+            </v-icon>
+            </td>
+        </tr>
     </template>
     </v-data-table>
-        <v-snackbar
+    <v-snackbar
       v-model="snackbar"
       :color="snack_color"
       :multi-line="mode === 'multi-line'"
@@ -261,10 +262,12 @@ import axios from 'axios';
 
   export default {
     data: () => ({
-        search_api_artikel: null,
-        search_api_gebinde: null,
-        search_api_entladung: null,
-        search_api_lieferant: null,
+        pagination: {
+            sortBy: 'ankunft',
+            descending: true
+        },
+        pagination_rows: [200,500,1000,{"text":"$vuetify.dataIterator.rowsPerPageAll","value":-1}],
+        isLoading: true,
         items_lieferant: [],
         items_artikel: [],
         items_gebinde: [],
@@ -276,7 +279,6 @@ import axios from 'axios';
         menu1: false,
         menu2: false,
         loading: false,
-        pagination: [200,500,1000,{"text":"$vuetify.dataIterator.rowsPerPageAll","value":-1}],
         dialog: false,
         headers: [
             { text: 'Produkt', value: 'produkt', sortable: true, align: 'left'},
@@ -286,20 +288,16 @@ import axios from 'axios';
             { text: 'Liefernat', value: 'lieferant', sortable: true, align: 'left'},
             { text: 'Preis', value: 'preis', sortable: true, align: 'left'},
             { text: 'Entladung', value: 'entladung', sortable: true, align: 'left'},
-            { text: 'Verladedatum', value: 'ankunft', sortable: true, align: 'left'},
-            { text: 'Ankunftsdatum', value: 'verladung', sortable: true, align: 'left'},
+            { text: 'Verladedatum', value: 'verladung', sortable: true, align: 'left'},
+            { text: 'Ankunftsdatum', value: 'ankunft', sortable: true, align: 'left'},
             { text: 'WE', value: 'we_nr', sortable: true, align: 'left'},
             { text: 'LS', value: 'ls_nr', sortable: true, align: 'left' },
-            { text: 'Aktionen', value: 'name', sortable: false, align: 'center' }
+            { text: 'Aktionen', value: '', sortable: false, align: 'center' }
         ],
         Wareneingang: [],
         editedIndex: -1,
-        editedItem: {
-            verladung: ''
-        },
-        defaultItem: {
-            name: ''
-        },
+        editedItem: {},
+        defaultItem: {},
         snackbar: false,
         snack_text: '',
         snack_color: '',
@@ -317,70 +315,6 @@ import axios from 'axios';
     },
 
     watch: {
-        search_api_artikel (val) {
-            // Items have already been loaded
-            if (this.items_artikel.length > 0) return
-            this.isLoading = true
-            // Lazily load input items
-            fetch(this.api_link + 'artikel')
-            .then(res => res.json())
-            .then(res => {
-                this.items_artikel = res
-            })
-            .catch(err => {
-                console.log(err)
-            })
-            .finally(() => (this.isLoading = false))
-        },
-
-        search_api_lieferant (val) {
-            // Items have already been loaded
-            if (this.items_lieferant.length > 0) return
-            this.isLoading = true
-            // Lazily load input items
-            fetch(this.api_link + 'lieferant')
-            .then(res => res.json())
-            .then(res => {
-                this.items_lieferant = res
-            })
-            .catch(err => {
-                console.log(err)
-            })
-            .finally(() => (this.isLoading = false))
-        },
-
-        search_api_gebinde (val) {
-            // Items have already been loaded
-            if (this.items_gebinde.length > 0) return
-            this.isLoading = true
-            // Lazily load input items
-            fetch(this.api_link+'gebinde')
-            .then(res => res.json())
-            .then(res => {
-                this.items_gebinde = res
-            })
-            .catch(err => {
-                console.log(err)
-            })
-            .finally(() => (this.isLoading = false))
-        },     
-
-        search_api_entladung (val) {
-            // Items have already been loaded
-            if (this.items_entladung.length > 0) return
-            this.isLoading = true
-            // Lazily load input items
-            fetch(this.api_link+'entladung')
-            .then(res => res.json())
-            .then(res => {
-                this.items_entladung = res
-            })
-            .catch(err => {
-                console.log(err)
-            })
-            .finally(() => (this.isLoading = false))
-        },     
-
         dialog (val) {
             val || this.close()
         }
@@ -391,43 +325,47 @@ import axios from 'axios';
     },
 
     methods: {
-        nullen_schneiden(vari) {
-            if (vari) {
-                var vari_arr = vari.split('.');
-                if (vari_arr[1] === '00') {
-                    vari = vari_arr[0]
-                }
-            }
-            return vari
-        },
-        punkt_zu_komma(vari){
-            if (vari) {
-                var v= vari.replace('.',',')
-            }
-            return v
-        },
+
+        search_api () {
+            // Items have already been loaded
+            if (this.items_artikel.length > 0 && this.items_lieferant.length > 0 && this.items_gebinde.length > 0 && this.items_entladung.length > 0) return
+            this.isLoading = true
+
+            axios.get(this.api_link+'artikel')
+            .then(res => this.items_artikel = res.data)
+            .catch(err => console.log(err)); /* eslint-disable-line no-console */
+
+            axios.get(this.api_link+'lieferant')
+            .then(res => this.items_lieferant = res.data)
+            .catch(err => console.log(err)); /* eslint-disable-line no-console */
+
+            axios.get(this.api_link+'gebinde')
+            .then(res => this.items_gebinde = res.data)
+            .catch(err => console.log(err)); /* eslint-disable-line no-console */
+
+            axios.get(this.api_link+'entladung')
+            .then(res => this.items_entladung = res.data)
+            .catch(err => console.log(err)) /* eslint-disable-line no-console */
+            .finally(() => (this.isLoading = false))
+        },    
+
         check_var_undifined (vari) {
             if (vari) {
                 vari = vari.replace(',','.')
             }
             return vari
         },
-        show_de_date (date) {
-            if (date) {
-                var splited = date.split('-');
-                date = splited[2] + '.' + splited[1] + '.' + splited[0]
-            }
-            return date
-        },
         initialize () {
+            this.loading = true
             axios.get(this.api_link+'we')
             .then(res => this.Wareneingang = res.data,)
-            .catch(err => console.log(err));
+            .catch(err => console.log(err)); /* eslint-disable-line no-console */
             this.loading = false
 
         },
 
         editItem (item) {
+            this.search_api()
             this.editedIndex = this.Wareneingang.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
@@ -438,7 +376,7 @@ import axios from 'axios';
             confirm('Wareneingang löschen?') && this.Wareneingang.splice(index, 1)
             axios.delete(this.api_link+'we/'+item.id)
             .then()
-            .catch(err => console.log(err));
+            .catch(err => console.log(err)); /* eslint-disable-line no-console */
         },
 
         close () {
@@ -480,7 +418,7 @@ import axios from 'axios';
                         )
                     .catch(
                         err => {
-                            this.snack_text = 'Da hat etwas nicht funktioniert :(',
+                            this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                             this.snack_color = 'error',
                             this.snackbar = true}
                         );
@@ -516,7 +454,7 @@ import axios from 'axios';
                     )
                 .catch(
                     err => (
-                        this.snack_text = 'Da hat etwas nicht funktioniert :(',
+                        this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                         this.snack_color = 'error',
                         this.snackbar = true)
                     );
@@ -525,16 +463,11 @@ import axios from 'axios';
             }
         }
     },
-    props: {
-      api_link: String
-    }
+    props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link']
 }
 </script>
 
 <style scoped>
-table.v-table tbody td, table.v-table tbody th {
-    height: 30px;
-}
 
 .pointer_td {
     cursor: pointer;

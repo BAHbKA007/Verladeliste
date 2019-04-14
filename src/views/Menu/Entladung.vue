@@ -138,7 +138,7 @@ import axios from 'axios';
         initialize () {
             axios.get(this.api_link + 'entladung')
             .then(res => this.Entladung = res.data)
-            .catch(err => console.log(err));
+            .catch(err => console.log(err)); /* eslint-disable-line no-console */
         },
 
         editItem (item) {
@@ -152,7 +152,7 @@ import axios from 'axios';
             confirm('Entladung löschen?') && this.Entladung.splice(index, 1)
             axios.delete(this.api_link+'entladung/'+item.id)
             .then()
-            .catch(err => console.log(err));
+            .catch(err => console.log(err)); /* eslint-disable-line no-console */
         },
 
         close () {
@@ -181,7 +181,7 @@ import axios from 'axios';
                     )
                 .catch(
                     err => {
-                        this.snack_text = 'Da hat etwas nicht funktioniert :(',
+                        this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                         this.snack_color = 'error',
                         this.snackbar = true}
                     );
@@ -203,7 +203,7 @@ import axios from 'axios';
                 )
             .catch(
                 err => (
-                    this.snack_text = 'Da hat etwas nicht funktioniert :(',
+                    this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                     this.snack_color = 'error',
                     this.snackbar = true)
                 );
@@ -218,7 +218,5 @@ import axios from 'axios';
 </script>
 
 <style scoped>
-table.v-table tbody td, table.v-table tbody th {
-    height: 30px;
-}
+
 </style>

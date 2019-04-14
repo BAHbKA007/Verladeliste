@@ -19,7 +19,7 @@
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-dialog v-model="dialog" max-width="500px" persistent>
             <template v-slot:activator="{ on }">
-            <v-btn color="primary" dark class="mb-2" v-on="on">Neuen Lieferanten anlegen</v-btn>
+                <v-btn color="primary" dark class="mb-2" v-on="on" @click="api_land">Neuen Lieferanten anlegen</v-btn>
             </template>
             <v-card>
             <v-card-title>
@@ -43,7 +43,6 @@
                             :rules="rules"
                             :label="'Land'"
                             :items="items_land"
-                            :search-input.sync="search_api_land"
                             item-text="name"
                             hide-no-data
                         >
@@ -144,17 +143,16 @@ export default {
     data: () => ({
         valid: false,
         isLoading: false,
-        search_api_land: null,
         items_land: [],
         search: '',
         pagination: [50,100,250,{"text":"$vuetify.dataIterator.rowsPerPageAll","value":-1}],
         dialog: false,
         headers: [
             { text: 'Nr.', value: 'nummer', sortable: false, align: 'left'},
-            { text: 'Lieferant', value: 'name', sortable: false, sortable: true, align: 'left'},
-            { text: 'Land', value: 'land', sortable: false, sortable: true, align: 'left'},
-            { text: 'Rabatt', value: 'rabatt', sortable: false, sortable: true, align: 'left'},
-            { text: 'Aktionen', value: 'name', sortable: false, sortable: true, align: 'center' }
+            { text: 'Lieferant', value: 'name', sortable: true, align: 'left'},
+            { text: 'Land', value: 'land', sortable: true, align: 'left'},
+            { text: 'Rabatt', value: 'rabatt', sortable: true, align: 'left'},
+            { text: 'Aktionen', value: 'name', sortable: false, align: 'center' }
         ],
         Lieferant: [],
         editedIndex: -1,
@@ -183,9 +181,16 @@ export default {
     watch: {
         dialog (val) {
             val || this.close()
-        },
-        
-        search_api_land (val) {
+        } 
+    },
+
+    created () {
+      this.initialize()
+    },
+
+    methods: {
+
+        api_land () {
             // Items have already been loaded
             if (this.items_land.length > 0) return
             this.isLoading = true
@@ -196,17 +201,11 @@ export default {
                 this.items_land = res
             })
             .catch(err => {
-                console.log(err)
+                console.log(err) /* eslint-disable-line no-console */
             })
             .finally(() => (this.isLoading = false))
-        }        
-    },
+        },
 
-    created () {
-      this.initialize()
-    },
-
-    methods: {
         nullen_schneiden(vari) {
             if (vari) {
                 var vari_arr = vari.split('.');
@@ -226,10 +225,11 @@ export default {
         initialize () {
             axios.get(this.api_link+'lieferant')
             .then(res => this.Lieferant = res.data)
-            .catch(err => console.log(err));
+            .catch(err => console.log(err)); /* eslint-disable-line no-console */
         },
 
         editItem (item) {
+            this.api_land ()
             this.search_api_land
             this.editedIndex = this.Lieferant.indexOf(item)
             this.editedItem = Object.assign({}, item)
@@ -241,7 +241,7 @@ export default {
             confirm('Lieferant löschen?') && this.Lieferant.splice(index, 1)
             axios.delete(this.api_link+'lieferant/'+item.id)
             .then()
-            .catch(err => console.log(err));
+            .catch(err => console.log(err)); /* eslint-disable-line no-console */
         },
 
         close () {
@@ -273,7 +273,7 @@ export default {
                         })
                     .catch(
                         err => {
-                            this.snack_text = 'Da hat etwas nicht funktioniert :(',
+                            this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                             this.snack_color = 'error',
                             this.snackbar = true}
                         );
@@ -299,7 +299,7 @@ export default {
                     )
                 .catch(
                     err => (
-                        this.snack_text = 'Da hat etwas nicht funktioniert :(',
+                        this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                         this.snack_color = 'error',
                         this.snackbar = true)
                     );
@@ -315,9 +315,6 @@ export default {
 </script>
 
 <style scoped>
-table.v-table tbody td, table.v-table tbody th {
-    height: 30px;
-}
 
 .my-input {
   text-transform: uppercase
