@@ -1,118 +1,120 @@
 <template>
-  <div>
-	<v-text-field
-		v-model="search"
-		:search-input.sync="search"
-		prepend-icon="search"
-		label="Verladung durchsuchen"
-		single-line
-		hide-details
-		clearable
-	></v-text-field>
-	<v-divider
-		class="mx-2"
-		inset
-		vertical
-	></v-divider>
-	<v-spacer></v-spacer>
+    <div>
+        <v-toolbar>
+        <v-text-field
+            v-model="search"
+            :search-input.sync="search"
+            prepend-icon="search"
+            label="Verladung durchsuchen"
+            single-line
+            hide-details
+            clearable
+        ></v-text-field>
+        <v-divider
+            class="mx-2"
+            inset
+            vertical
+        ></v-divider>
+        <v-spacer></v-spacer>
+        </v-toolbar>
 
-    <v-dialog v-model="dialog" max-width="50%" persistent>
-        <v-card>
-            <v-card-title>
-            <span class="headline">LKW bearbeiten</span>
-            </v-card-title>
-            
-            <v-card-text>
-                <v-container grid-list-md>
-                    <v-layout wrap>
-                        <v-flex xs12 sm6 md4>
-                            <v-text-field v-model="editedItem.lkw" label="Kennzeichen"></v-text-field>
-                        </v-flex>
-                        <v-flex xs12 sm6 md4>
-                            <v-text-field v-model="editedItem.spedition" label="Spedition"></v-text-field>
-                        </v-flex>
-                        <v-flex xs12 sm6 md4>
-                            <v-text-field v-model="editedItem.frachtkosten" prepend-icon="euro_symbol" type="number" label="Frachtkosten"></v-text-field>
-                        </v-flex>
-                        <v-flex xs12 sm6 md12>
-                            <v-textarea
-                                v-model="editedItem.kommentar"
-                                label="Kommentar"
-                                counter
-                                maxlength="191"
-                            ></v-textarea>
-                        </v-flex>                        
-                    </v-layout>
-                </v-container>
-            </v-card-text>
+        <v-dialog v-model="dialog" max-width="50%" persistent>
+            <v-card>
+                <v-card-title>
+                <span class="headline">LKW bearbeiten</span>
+                </v-card-title>
+                
+                <v-card-text>
+                    <v-container grid-list-md>
+                        <v-layout wrap>
+                            <v-flex xs12 sm6 md4>
+                                <v-text-field v-model="editedItem.lkw" label="Kennzeichen"></v-text-field>
+                            </v-flex>
+                            <v-flex xs12 sm6 md4>
+                                <v-text-field v-model="editedItem.spedition" label="Spedition"></v-text-field>
+                            </v-flex>
+                            <v-flex xs12 sm6 md4>
+                                <v-text-field v-model="editedItem.frachtkosten" prepend-icon="euro_symbol" type="number" label="Frachtkosten"></v-text-field>
+                            </v-flex>
+                            <v-flex xs12 sm6 md12>
+                                <v-textarea
+                                    v-model="editedItem.kommentar"
+                                    label="Kommentar"
+                                    counter
+                                    maxlength="191"
+                                ></v-textarea>
+                            </v-flex>                        
+                        </v-layout>
+                    </v-container>
+                </v-card-text>
 
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click="close">abbrechen</v-btn>
-                <v-btn color="blue darken-1" flat @click="save">speichern</v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" flat @click="close">abbrechen</v-btn>
+                    <v-btn color="blue darken-1" flat @click="save">speichern</v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
 
 
-	<div v-bind:key="item.id" v-for="item in this.lkws" :style="{backgroundColor: colors(item.ankunft)}" @click="editLkws(item)" style="cursor: pointer">
-		<div class="head">
-            <div>
-                <strong v-show="item.lkw != undefined">LKW:</strong> {{item.lkw}} <strong v-show="item.spedition != undefined">Spedition:</strong> {{item.spedition}} <strong v-show="item.frachtkosten != undefined">Frachtkosten:</strong> <span v-show="item.frachtkosten != undefined"> {{item.frachtkosten}} €</span>
-			    <div v-show="item.kommentar != undefined"> <span style="font-style: italic; font-size: 12px">{{item.kommentar}}</span></div>
+        <div v-bind:key="item.id" v-for="item in this.lkws" :style="{backgroundColor: colors(item.ankunft)}" @click="editLkws(item)" style="cursor: pointer">
+            <div class="head">
+                <div>
+                    <strong v-show="item.lkw != undefined && item.lkw != ''">LKW:</strong> {{item.lkw}} <strong v-show="item.spedition != undefined && item.spedition != ''">Spedition:</strong> {{item.spedition}} <strong v-show="item.frachtkosten != undefined && item.spedition != ''">Frachtkosten:</strong> <span v-show="item.frachtkosten != undefined && item.frachtkosten !=''"> {{item.frachtkosten}} €</span>
+                    <div v-show="item.kommentar != undefined"> <span style="font-style: italic; font-size: 12px">{{item.kommentar}}</span></div>
+                </div>
             </div>
-		</div>
-        <v-card>
-            <template>
-                <v-data-table
-                    :headers="headers"
-                    :items="item.wes"
-                    class="elevation-1 mytable"
-                    hide-actions
-                    :search="search"
-                >
-                    <template v-slot:items="props">
-                        <tr :style="{backgroundColor: colors(props.item.ankunft) }">
-                            <td class="text-xs-left">{{ props.item.produkt }}</td>
-                            <td class="text-xs-left">{{ props.item.gebinde }}</td>
-                            <td class="text-xs-left">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
-                            <td class="text-xs-left">{{ props.item.menge }}</td>
-                            <td class="text-xs-left">{{ props.item.lieferant }}</td>
-                            <td class="text-xs-left">{{ props.item.preis }}€</td>
-                            <td class="text-xs-left">{{ props.item.entladung }}</td>
-                            <td class="text-xs-left">{{ show_de_date(props.item.verladung) }}</td>                        
-                            <td class="text-xs-left">{{ show_de_date(props.item.ankunft) }}</td>
-                            <td class="text-xs-left">{{ props.item.we_nr }}</td>
-                            <td class="text-xs-left">{{ props.item.ls_nr }}</td>
-                        </tr>
-                    </template>
-                </v-data-table>
-            </template>
-        </v-card>
-	</div>
-    <v-pagination
-        style="margin-top: 19px"
-        v-model="pagination.current"
-        :length="pagination.total"
-        @input="onPageChange"
-    ></v-pagination>
-    <v-snackbar
-        v-model="snackbar"
-        :color="snack_color"
-        :multi-line="mode === 'multi-line'"
-        :timeout="timeout"
-        :vertical="mode === 'vertical'"
-        >
-        {{ snack_text }}
-        <v-btn
-            dark
-            flat
-            @click="snackbar = false"
-        >
-            Schließen
-        </v-btn>
-	</v-snackbar>
-  </div>
+            <v-card>
+                <template>
+                    <v-data-table
+                        :headers="headers"
+                        :items="item.wes"
+                        class="elevation-1 mytable"
+                        hide-actions
+                        :search="search"
+                    >
+                        <template v-slot:items="props">
+                            <tr :style="{backgroundColor: colors(props.item.ankunft) }">
+                                <td class="text-xs-left">{{ props.item.produkt }}</td>
+                                <td class="text-xs-left">{{ props.item.gebinde }}</td>
+                                <td class="text-xs-left">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
+                                <td class="text-xs-left">{{ props.item.menge }}</td>
+                                <td class="text-xs-left">{{ props.item.lieferant }}</td>
+                                <td class="text-xs-left">{{ props.item.preis }}€</td>
+                                <td class="text-xs-left">{{ props.item.entladung }}</td>
+                                <td class="text-xs-left">{{ show_de_date(props.item.verladung) }}</td>                        
+                                <td class="text-xs-left">{{ show_de_date(props.item.ankunft) }}</td>
+                                <td class="text-xs-left">{{ props.item.we_nr }}</td>
+                                <td class="text-xs-left">{{ props.item.ls_nr }}</td>
+                            </tr>
+                        </template>
+                    </v-data-table>
+                </template>
+            </v-card>
+        </div>
+        <v-pagination
+            style="margin-top: 19px"
+            v-model="pagination.current"
+            :length="pagination.total"
+            @input="onPageChange"
+        ></v-pagination>
+        <v-snackbar
+            v-model="snackbar"
+            :color="snack_color"
+            :multi-line="mode === 'multi-line'"
+            :timeout="timeout"
+            :vertical="mode === 'vertical'"
+            >
+            {{ snack_text }}
+            <v-btn
+                dark
+                flat
+                @click="snackbar = false"
+            >
+                Schließen
+            </v-btn>
+        </v-snackbar>
+    </div>
 </template>
 
 <script>

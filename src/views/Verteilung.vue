@@ -1,62 +1,77 @@
 <template>
-    <v-card v-bind:class="{ active: isActive }">
-        <v-card-title>
-            Verteilung
-        <v-spacer></v-spacer>
-            <v-form ref="form" v-model="valid" lazy-validation>
-                <v-dialog v-model="dialog" max-width="60%" persistent>
-                    <v-card>
-                    <v-card-title>
-                        <span class="headline">{{editedItem.produkt}} in {{editedItem.gebinde}} von {{editedItem.lieferant}}</span>
-                    </v-card-title>
+    <div>
+        <v-toolbar flat>
+            <v-card-title>
+                Verteilung
+            </v-card-title>
+                <v-divider
+                    class="mx-2"
+                    inset
+                    vertical
+                ></v-divider>
+                <v-spacer></v-spacer>
+                    <country-flag country="IT" size='normal'/><v-switch v-model="where_land" label="Jacob" value="Jacob"></v-switch>
+                    <v-switch v-model="where_land" label="Jacob" value="Jacob"></v-switch>
+                    <v-switch v-model="where_land" label="John" value="John"></v-switch>
+                    <v-switch v-model="where_land" label="Jacob" value="Jacob"></v-switch>
+                    <v-switch v-model="where_land" label="John" value="John"></v-switch>
+                    <v-switch v-model="where_land" label="Jacob" value="Jacob"></v-switch>
+                <v-spacer></v-spacer>
+                <v-form ref="form" v-model="valid" lazy-validation>
+                    <v-dialog v-model="dialog" max-width="60%" persistent>
+                        <v-card>
+                        <v-card-title>
+                            <span class="headline">{{editedItem.produkt}} in {{editedItem.gebinde}} von {{editedItem.lieferant}}</span>
+                        </v-card-title>
 
-                    <v-card-text>
-                        <v-container grid-list-md>
-                        <v-layout wrap>
-                            <v-flex xs12 sm6 md6>
-                            <v-text-field v-model="editedItem.paletten" type="number" min="0" :max="split_cache" :rules="rules" label="Paletten alter WE"></v-text-field>
-                            </v-flex>
-                            <v-flex xs12 sm6 md6>
-                            <v-text-field v-model="split_ber.menge_alt" type="number" min="0" readonly label="Menge alter WE"></v-text-field>
-                            </v-flex>
+                        <v-card-text>
+                            <v-container grid-list-md>
+                            <v-layout wrap>
+                                <v-flex xs12 sm6 md6>
+                                <v-text-field v-model="editedItem.paletten" type="number" min="0" :max="split_cache" :rules="rules" label="Paletten alter WE"></v-text-field>
+                                </v-flex>
+                                <v-flex xs12 sm6 md6>
+                                <v-text-field v-model="split_ber.menge_alt" disabled type="number" min="0" readonly label="Menge alter WE"></v-text-field>
+                                </v-flex>
 
-                            <v-flex xs12 sm6 md6>
-                            <v-text-field v-model="split_ber.paletten" type="number" min="0" readonly label="Paletten neuer Split-WE"></v-text-field>
-                            </v-flex>
-                            <v-flex xs12 sm6 md6>
-                            <v-text-field v-model="split_ber.menge" type="number" min="0" readonly label="Menge neuer Split-WE"></v-text-field>
-                            </v-flex>
-                        </v-layout>
-                        </v-container>
-                    </v-card-text>
+                                <v-flex xs12 sm6 md6>
+                                <v-text-field v-model="split_ber.paletten" disabled type="number" min="0" readonly label="Paletten neuer Split-WE"></v-text-field>
+                                </v-flex>
+                                <v-flex xs12 sm6 md6>
+                                <v-text-field v-model="split_ber.menge" disabled type="number" min="0" readonly label="Menge neuer Split-WE"></v-text-field>
+                                </v-flex>
+                            </v-layout>
+                            </v-container>
+                        </v-card-text>
 
-                    <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" flat @click="close">abbrechen</v-btn>
-                        <v-btn color="blue darken-1" flat @click="save">splitten</v-btn>
-                    </v-card-actions>
-                    </v-card>
-                </v-dialog>
-            </v-form>
+                        <v-card-actions>
+                            <v-spacer></v-spacer>
+                            <v-btn color="blue darken-1" flat @click="close">abbrechen</v-btn>
+                            <v-btn color="blue darken-1" flat @click="save">splitten</v-btn>
+                        </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-form>
 
-            <v-text-field
-                v-model="search"
-                appprependend-icon="search"
-                label="Suche"
-                single-line
-                hide-details
-                clearable
-        ></v-text-field>
-        </v-card-title>
+                <v-text-field
+                    v-model="search"
+                    appprependend-icon="search"
+                    label="Suche"
+                    single-line
+                    hide-details
+                    clearable
+            ></v-text-field>
+        </v-toolbar>
         <v-data-table
         :headers="headers"
         :items="wes"
         :search="search"
         hide-actions
         :pagination.sync="pagination"
+        class="elevation-1"
         >
         <template v-slot:items="props">
-                <tr class="pointer_td" :style="{backgroundColor: colors(props.item.ankunft) }">
+                <tr :key="props.index" class="pointer_td" :style="{backgroundColor: colors(props.item.ankunft) }">
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.produkt }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.gebinde }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
@@ -101,12 +116,18 @@
             </v-chip>
             <div><v-btn color="success" @click="create_lkw">{{sum_paletten}} paletten </v-btn></div>
         </div>
-    </v-card>
+    </div>
 </template>
 <script>
+import CountryFlag from 'vue-country-flag'
 import axios from 'axios';
 
 export default {
+
+    components: {
+        CountryFlag
+    },
+
     data () {
         return {
             valid: false,
@@ -149,7 +170,8 @@ export default {
             mode: 'multi-line',
             timeout: 6000,
             verteil: [],
-            isActive: false
+            isActive: false,
+            where_land: []
         }
     },
 

@@ -207,7 +207,7 @@
         :loading="loading"
     >
     <template v-slot:items="props">
-        <tr class="pointer_td">
+        <tr :key="props.index" class="pointer_td">
             <td @click="editItem(props.item)">{{ props.item.produkt }}</td>
             <td @click="editItem(props.item)">{{ props.item.gebinde }}</td>
             <td @click="editItem(props.item)">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
