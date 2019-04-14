@@ -102,17 +102,13 @@ import axios from 'axios';
         pagination: [50,100,250,{"text":"$vuetify.dataIterator.rowsPerPageAll","value":-1}],
         dialog: false,
         headers: [
-            { text: 'Artikel', value: 'name', sortable: false, align: 'left'},
+            { text: 'Artikel', value: 'name', sortable: true, align: 'left'},
             { text: 'Aktionen', value: 'name', sortable: false, align: 'center' }
         ],
         Artikel: [],
         editedIndex: -1,
-        editedItem: {
-            name: ''
-        },
-        defaultItem: {
-            name: ''
-        },
+        editedItem: {},
+        defaultItem: {},
         snackbar: false,
         snack_text: '',
         snack_color: '',

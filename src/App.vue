@@ -31,7 +31,8 @@ export default {
         return {
             footer_show: true,
             dark: false,
-            api_link: 'http://192.168.178.166/verladeliste-api/public/api/'//'http://localhost/verladeliste-api/public/api/'
+            api_link: //'http://192.168.178.166/verladeliste-api/public/api/'//
+            'http://localhost/verladeliste-api/public/api/'
         }
     },
     methods: {

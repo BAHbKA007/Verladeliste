@@ -139,7 +139,11 @@ import axios from 'axios';
         initialize () {
             axios.get(this.api_link+'gebinde')
             .then(res => this.Gebinde = res.data)
-            .catch(err => console.log(err));
+            .catch(err => {
+                this.snack_text = 'Da hat etwas nicht funktioniert :(' + err,
+                this.snack_color = 'error',
+                this.snackbar = true
+            });
         },
 
         editItem (item) {
@@ -153,7 +157,11 @@ import axios from 'axios';
             confirm('Gebinde löschen?') && this.Gebinde.splice(index, 1)
             axios.delete(this.api_link+'gebinde/'+item.id)
             .then()
-            .catch(err => console.log(err));
+            .catch(err => {
+                this.snack_text = 'Da hat etwas nicht funktioniert :(' + err,
+                this.snack_color = 'error',
+                this.snackbar = true
+            });
         },
 
         close () {
@@ -182,9 +190,10 @@ import axios from 'axios';
                     )
                 .catch(
                     err => {
-                        this.snack_text = 'Da hat etwas nicht funktioniert :(',
+                        this.snack_text = 'Da hat etwas nicht funktioniert :(' + err,
                         this.snack_color = 'error',
-                        this.snackbar = true}
+                        this.snackbar = true
+                        }
                     );
 
                 Object.assign(this.Gebinde[this.editedIndex], this.editedItem)

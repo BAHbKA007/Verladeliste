@@ -283,7 +283,7 @@ export default {
                             this.snack_text = 'Neuen LKW hinzugefügt',
                             this.snack_color = 'success',
                             this.snackbar = true,
-                            this.initialize()
+                            this.initialize(),
                             this.verteil = []
                         } 
                     }
