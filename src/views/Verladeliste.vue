@@ -1,34 +1,25 @@
 <template>
   <div>
-      <v-btn color="primary" @click="asd">Primary</v-btn>
-        <v-text-field
-            v-model="search"
-            :search-input.sync="search"
-            prepend-icon="search"
-            label="Verladung durchsuchen"
-            single-line
-            hide-details
-            clearable
-        ></v-text-field>
-      <v-divider
-        class="mx-2"
-        inset
-        vertical
-      ></v-divider>
-      <v-spacer></v-spacer>
-    <v-expansion-panel
-        v-model="panel"
-        expand
-    >
-      <v-expansion-panel-content
-            v-for="(item,i) in lkws"
-            :key="i"
-            :style="{backgroundColor: colors(item.ankunft) }"
-            v-show="true"
-      >
-        <template v-slot:header>
-          <div ><strong>LKW:</strong> {{item.lkw}} <strong>Spedition:</strong> {{item.spedition}} <strong>Frachtkosten:</strong> {{item.frachtkosten}} €</div>
-        </template>
+	<v-text-field
+		v-model="search"
+		:search-input.sync="search"
+		prepend-icon="search"
+		label="Verladung durchsuchen"
+		single-line
+		hide-details
+		clearable
+	></v-text-field>
+	<v-divider
+		class="mx-2"
+		inset
+		vertical
+	></v-divider>
+	<v-spacer></v-spacer>
+	<div v-bind:key="item.id" v-for="item in this.lkws" :style="{backgroundColor: colors(item.ankunft)}">
+		<div class="head">
+			<strong>LKW:</strong> {{item.lkw}} <strong>Spedition:</strong> {{item.spedition}} <strong>Frachtkosten:</strong> {{item.frachtkosten}} €
+			<div > <span style="font-style: italic; font-size: 12px">1231231231</span></div>
+		</div>
         <v-card>
             <template>
                 <v-data-table
@@ -50,13 +41,27 @@
                             <td class="text-xs-left">{{ show_de_date(props.item.verladung) }}</td>                        
                             <td class="text-xs-left">{{ show_de_date(props.item.ankunft) }}</td>
                         </tr>
-                        <div>asdasdas</div>
                     </template>
                 </v-data-table>
             </template>
+			<v-snackbar
+				v-model="snackbar"
+				:color="snack_color"
+				:multi-line="mode === 'multi-line'"
+				:timeout="timeout"
+				:vertical="mode === 'vertical'"
+				>
+				{{ snack_text }}
+				<v-btn
+					dark
+					flat
+					@click="snackbar = false"
+				>
+					Schließen
+				</v-btn>
+			</v-snackbar>
         </v-card>
-      </v-expansion-panel-content>
-    </v-expansion-panel>
+	</div>
     <v-pagination
         v-model="pagination.current"
         :length="pagination.total"
@@ -83,26 +88,24 @@ export default {
             ],
             search: null,
             lkws: null,
-            panel: [],
-            items: 5,
             pagination: {
                 current: 1,
                 total: 0
-            }
+            },
+            snackbar: false,
+            snack_text: '',
+            snack_color: '',
+            mode: 'multi-line',
+            timeout: 6000
         }
     },
     methods: {
-        asd() {
-            console.log(this.search)
-        },
         getLkws() {
             axios.get(this.api_link + 'lkw?page=' + this.pagination.current)
                 .then(response => {
                     this.lkws = response.data.data;
                     this.pagination.current = response.data.meta.current_page;
                     this.pagination.total = response.data.meta.last_page;
-                    this.items = response.data.meta.per_page;
-                    this.panel = [...Array(this.items).keys()].map(_ => true)
                 })                    
                 .catch(
                     err => {
@@ -113,13 +116,6 @@ export default {
         },
         onPageChange() {
             this.getLkws();
-        },
-
-        all () {
-            this.panel = [...Array(this.items).keys()].map(_ => true)
-        },
-        none () {
-            this.panel = []
         }
     },
     created() {
@@ -130,6 +126,10 @@ export default {
 </script>
 
 <style scoped>
+.head {
+	margin-top: 10px;
+	padding: 0 24px 0 24px;
+}
 
 table.v-table tbody td, table.v-table tbody th, table.v-table thead, table.v-table thead tr {
     height: 0px !important;

@@ -112,11 +112,11 @@ import axios from 'axios';
         defaultItem: {
             name: ''
         },
-        snackbar: false,
-        snack_text: '',
-        snack_color: '',
-        mode: 'multi-line',
-        timeout: 6000
+		snackbar: false,
+		snack_text: '',
+		snack_color: '',
+		mode: 'multi-line',
+		timeout: 6000
     }),
 
     computed: {

@@ -119,9 +119,9 @@ import axios from 'axios';
     }),
 
     computed: {
-      formTitle () {
-        return this.editedIndex === -1 ? 'Neuen Entladung anlegen' : 'Entladung bearbeiten'
-      }
+		formTitle () {
+			return this.editedIndex === -1 ? 'Neuen Entladung anlegen' : 'Entladung bearbeiten'
+		}
     },
 
     watch: {
@@ -131,7 +131,7 @@ import axios from 'axios';
     },
 
     created () {
-      this.initialize()
+		this.initialize()
     },
 
     methods: {

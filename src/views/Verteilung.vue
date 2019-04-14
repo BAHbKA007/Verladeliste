@@ -153,9 +153,7 @@ export default {
         }
     },
 
-    props: {
-        api_link: String
-    },
+    props:  ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link'],
 
     created () {
         this.initialize()
@@ -169,21 +167,6 @@ export default {
             if (this.sum_paletten == 0) {
                 this.isActive = false
             }
-        },
-        nullen_schneiden(vari) {
-            if (vari) {
-                var vari_arr = vari.split('.');
-                if (vari_arr[1] === '00') {
-                    vari = vari_arr[0]
-                }
-            }
-            return vari
-        },
-        punkt_zu_komma(vari){
-            if (vari) {
-                var v= vari.replace('.',',')
-            }
-            return v
         },
         split(item) {
             this.editedIndex = this.wes.indexOf(item)
@@ -199,14 +182,6 @@ export default {
             this.wes.splice(index, 1)
             this.verteil.push(we)
         },
-        colors(data) {
-            var date = '';
-            var splited = data.split('-');
-            var tr = 0.4;
-            var tag = ['RGB(255,153,0,'+tr+')','RGB(255,255,153,'+tr+')','RGB(0,204,255,'+tr+')','RGB(0,255,0,'+tr+')','RGB(204,153,255,'+tr+')','RGB(150,150,150,'+tr+')','RGB(255,0,255,'+tr+')'];
-            date = tag[new Date(splited[0],splited[1]-1,splited[2]).getDay()];
-            return date
-        },
         initialize() {
 
             axios.get(this.api_link + 'we/1')
@@ -217,14 +192,6 @@ export default {
                     this.snack_color = 'error',
                     this.snackbar = true)
                 );
-        },
-        show_de_date (date) {
-            if (date) {
-                var tag = ['So.','Mo.','Di.','Mi.','Do.','Fr.','Sa.'];
-                var splited = date.split('-');
-                date = tag[new Date(splited[0],splited[1]-1,splited[2]).getDay()] + ' ' + splited[2] + '.' + splited[1] + '.' + splited[0]
-            }
-            return date
         },
         editItem (item) {
             this.editedIndex = this.wes.indexOf(item)
