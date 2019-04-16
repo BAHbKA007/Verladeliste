@@ -75,12 +75,14 @@
                                 :label="'Lieferant'"
                                 :items="items_lieferant"
                                 item-text="name"
+                                item-value="id"
                                 hide-no-data
+                                return-object
                             >
                                 <template v-slot:item="{ item }">
-                                <v-list-tile-content>
-                                    <v-list-tile-title v-text="item.name"></v-list-tile-title>
-                                </v-list-tile-content>
+                                    <v-list-tile-content>
+                                        <v-list-tile-title v-text="item.name"></v-list-tile-title>
+                                    </v-list-tile-content>
                                 </template>
                             </v-autocomplete>
                         </v-flex>
@@ -212,7 +214,7 @@
             <td @click="editItem(props.item)">{{ props.item.gebinde }}</td>
             <td @click="editItem(props.item)">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
             <td @click="editItem(props.item)">{{ props.item.menge }}</td>
-            <td @click="editItem(props.item)">{{ props.item.lieferant }}</td>
+            <td @click="editItem(props.item)">{{ props.item.lieferant.name }}</td>
             <td @click="editItem(props.item)">{{ punkt_zu_komma(props.item.preis) }}€</td>
             <td @click="editItem(props.item)">{{ props.item.entladung }}</td>
             <td @click="editItem(props.item)">{{ show_de_date(props.item.verladung) }}</td>
@@ -359,7 +361,12 @@ import axios from 'axios';
             this.loading = true
             axios.get(this.api_link+'we')
             .then(res => this.Wareneingang = res.data,)
-            .catch(err => console.log(err)); /* eslint-disable-line no-console */
+            .catch(err => 
+                    err => (
+                        this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                        this.snack_color = 'error',
+                        this.snackbar = true)
+                    ); /* eslint-disable-line no-console */
             this.loading = false
 
         },
@@ -376,7 +383,12 @@ import axios from 'axios';
             confirm('Wareneingang löschen?') && this.Wareneingang.splice(index, 1)
             axios.delete(this.api_link+'we/'+item.id)
             .then()
-            .catch(err => console.log(err)); /* eslint-disable-line no-console */
+            .catch(
+                err => (
+                    this.snack_text = 'Da hat etwas nicht funktioniert :( delete' + err,
+                    this.snack_color = 'error',
+                    this.snackbar = true)
+                ); /* eslint-disable-line no-console */
         },
 
         close () {
@@ -398,7 +410,7 @@ import axios from 'axios';
                         produkt: this.editedItem.produkt,
                         gebinde: this.editedItem.gebinde,
                         menge: this.editedItem.menge,
-                        lieferant: this.editedItem.lieferant,
+                        lieferant: this.editedItem.lieferant.id,
                         paletten: this.check_var_undifined(this.editedItem.paletten),
                         preis: this.check_var_undifined(this.editedItem.preis),
                         verladung: this.editedItem.verladung,
@@ -413,7 +425,7 @@ import axios from 'axios';
                                 this.snack_text = 'Wareneingang erfolgreich geändert',
                                 this.snack_color = 'success',
                                 this.snackbar = true
-                            } 
+                            }
                             }
                         )
                     .catch(
@@ -433,7 +445,7 @@ import axios from 'axios';
                         produkt: this.editedItem.produkt,
                         gebinde: this.editedItem.gebinde,
                         menge: this.editedItem.menge,
-                        lieferant: this.editedItem.lieferant,
+                        lieferant: this.editedItem.lieferant.id,
                         paletten: this.check_var_undifined(this.editedItem.paletten),
                         preis: this.check_var_undifined(this.editedItem.preis),
                         verladung: this.editedItem.verladung,

@@ -94,7 +94,7 @@
 
         <td>{{ props.item.nummer }}</td>
         <td>{{ props.item.name }}</td>
-        <td>{{ props.item.land.land_name }}</td>
+        <td><span>{{ props.item.land.land_name }}</span></td>
         <td>{{ punkt_zu_komma(nullen_schneiden(props.item.rabatt))}}%</td>
         <td class="justify-center layout px-0">
           <v-icon
@@ -203,7 +203,9 @@ export default {
                 this.items_land = res
             })
             .catch(err => {
-                console.log(err) /* eslint-disable-line no-console */
+                this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                this.snack_color = 'error',
+                this.snackbar = true
             })
             .finally(() => (this.isLoading = false))
         },
@@ -227,7 +229,11 @@ export default {
         initialize () {
             axios.get(this.api_link+'lieferant')
             .then(res => this.Lieferant = res.data)
-            .catch(err => console.log(err)); /* eslint-disable-line no-console */
+            .catch(err => {
+                this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                this.snack_color = 'error',
+                this.snackbar = true                
+            });
         },
 
         editItem (item) {
@@ -242,7 +248,11 @@ export default {
             confirm('Lieferant löschen?') && this.Lieferant.splice(index, 1)
             axios.delete(this.api_link+'lieferant/'+item.id)
             .then()
-            .catch(err => console.log(err)); /* eslint-disable-line no-console */
+            .catch(err => {
+                this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                this.snack_color = 'error',
+                this.snackbar = true
+            }); 
         },
 
         close () {
@@ -281,7 +291,6 @@ export default {
 
                     Object.assign(this.Lieferant[this.editedIndex], this.editedItem)
                 } else {
-                    console.log(this.editedItem.land)
                     axios.post(this.api_link+'lieferant',{
                         id: this.editedItem.id,
                         name: this.editedItem.name,

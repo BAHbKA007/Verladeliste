@@ -19,7 +19,7 @@
                     <v-dialog v-model="dialog" max-width="60%" persistent>
                         <v-card>
                         <v-card-title>
-                            <span class="headline">{{editedItem.produkt}} in {{editedItem.gebinde}} von {{editedItem.lieferant}}</span>
+                            <span class="headline">{{editedItem.produkt}} in {{editedItem.gebinde}} von {{lieferant_name}}</span>
                         </v-card-title>
 
                         <v-card-text>
@@ -74,7 +74,7 @@
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.gebinde }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.menge }}</td>
-                    <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.lieferant }}</td>
+                    <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.lieferant.name }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.preis }}€</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.entladung }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ show_de_date(props.item.verladung) }}</td>
@@ -128,6 +128,8 @@ export default {
 
     data () {
         return {
+            lieferant_id: String,
+            lieferant_name: String,
             valid: false,
             rules: [
                 v => !!v || 'Feld darf nicht leer sein',
@@ -191,6 +193,8 @@ export default {
         split(item) {
             this.editedIndex = this.wes.indexOf(item)
             this.editedItem = Object.assign({}, item)
+            this.lieferant_name = this.editedItem.lieferant.name
+            this.lieferant_id = this.editedItem.lieferant.id
             this.newItem = Object.assign({}, item)
             this.palettenfaktor = this.editedItem.menge / this.editedItem.paletten
             this.split_cache = this.editedItem.paletten
@@ -230,11 +234,12 @@ export default {
             if (this.$refs.form.validate()) {
             
                 this.computedItem = this.split_ber
-                
+                console.log(this.lieferant_id)
+
                 axios.put(this.api_link + 'we',{
                     id: this.editedItem.id,
                     menge: this.computedItem.menge_alt,
-                    paletten: this.editedItem.paletten
+                    paletten: this.editedItem.paletten,
                 })
                 .then(
                     resp => {
@@ -243,7 +248,7 @@ export default {
                                 produkt: this.editedItem.produkt,
                                 gebinde: this.editedItem.gebinde,
                                 menge: this.computedItem.menge,
-                                lieferant: this.editedItem.lieferant,
+                                lieferant: this.lieferant_id,
                                 paletten: this.computedItem.paletten,
                                 preis: this.editedItem.preis,
                                 verladung: this.editedItem.verladung,
@@ -264,7 +269,7 @@ export default {
                                 )
                             .catch(
                                 err => (
-                                    this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                                    this.snack_text = 'Da hat etwas nicht funktioniert :(' + err,
                                     this.snack_color = 'error',
                                     this.snackbar = true)
                                 );
@@ -274,7 +279,7 @@ export default {
                     )
                 .catch(
                     err => {
-                        this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                        this.snack_text = 'Da hat etwas nicht funktioniert :(' + err,
                         this.snack_color = 'error',
                         this.snackbar = true}
                     );
