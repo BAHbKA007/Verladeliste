@@ -10,12 +10,10 @@
                     vertical
                 ></v-divider>
                 <v-spacer></v-spacer>
-                    <country-flag country="IT" size='normal'/><v-switch v-model="where_land" label="Jacob" value="Jacob"></v-switch>
-                    <v-switch v-model="where_land" label="Jacob" value="Jacob"></v-switch>
-                    <v-switch v-model="where_land" label="John" value="John"></v-switch>
-                    <v-switch v-model="where_land" label="Jacob" value="Jacob"></v-switch>
-                    <v-switch v-model="where_land" label="John" value="John"></v-switch>
-                    <v-switch v-model="where_land" label="Jacob" value="Jacob"></v-switch>
+                    <country-flag style="margin: 0 0px 18px 0" country="IT" size='normal'/><v-switch v-model="where_land" label="Italien" value="IT"></v-switch>
+                    <country-flag style="margin: 0 0px 18px 0" country="ES" size='normal'/><v-switch v-model="where_land" label="Spanien" value="ES"></v-switch>
+                    <country-flag style="margin: 0 0px 18px 0" country="FR" size='normal'/><v-switch v-model="where_land" label="Frankreich" value="FR"></v-switch>
+                    <country-flag style="margin: 0 0px 18px 0" country="DE" size='normal'/><v-switch v-model="where_land" label="Deutschland" value="DE"></v-switch>
                 <v-spacer></v-spacer>
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-dialog v-model="dialog" max-width="60%" persistent>

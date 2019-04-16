@@ -43,20 +43,22 @@
                             :rules="rules"
                             :label="'Land'"
                             :items="items_land"
-                            item-text="name"
+                            item-text="land_name"
+                            item-value="land_id"
                             hide-no-data
+                            return-object
                         >
                             <template v-slot:selection="{ item, selected }">
-                                <country-flag v-bind:country="item.name" size='normal'/>
-                                <span style="margin-left:12px;text-transform: uppercase" v-text="item.name"></span>
+                                <country-flag v-bind:country="item.land_name" size='normal'/>
+                                <span style="margin-left:12px;text-transform: uppercase" v-text="item.land_name"></span>
                             </template>
                             <template v-slot:item="{ item }">
-                            <v-list-tile-content>
-                                <v-list-tile-title v-text="item.name"></v-list-tile-title>
-                            </v-list-tile-content>
-                            <v-list-tile-action>
-                                <country-flag v-bind:country="item.name" size='normal'/>
-                            </v-list-tile-action> 
+                                <v-list-tile-content>
+                                    <v-list-tile-title v-text="item.land_name"></v-list-tile-title>
+                                </v-list-tile-content>
+                                <v-list-tile-action>
+                                    <country-flag v-bind:country="item.land_name" size='normal'/>
+                                </v-list-tile-action> 
                             </template>
                         </v-autocomplete>
 
@@ -92,7 +94,7 @@
 
         <td>{{ props.item.nummer }}</td>
         <td>{{ props.item.name }}</td>
-        <td>{{ props.item.land }}</td>
+        <td>{{ props.item.land.land_name }}</td>
         <td>{{ punkt_zu_komma(nullen_schneiden(props.item.rabatt))}}%</td>
         <td class="justify-center layout px-0">
           <v-icon
@@ -150,7 +152,7 @@ export default {
         headers: [
             { text: 'Nr.', value: 'nummer', sortable: false, align: 'left'},
             { text: 'Lieferant', value: 'name', sortable: true, align: 'left'},
-            { text: 'Land', value: 'land', sortable: true, align: 'left'},
+            { text: 'Land', value: 'land.land_name', sortable: true, align: 'left'},
             { text: 'Rabatt', value: 'rabatt', sortable: true, align: 'left'},
             { text: 'Aktionen', value: 'name', sortable: false, align: 'center' }
         ],
@@ -230,7 +232,6 @@ export default {
 
         editItem (item) {
             this.api_land ()
-            this.search_api_land
             this.editedIndex = this.Lieferant.indexOf(item)
             this.editedItem = Object.assign({}, item)
             this.dialog = true
@@ -260,7 +261,7 @@ export default {
                         id: this.editedItem.id,
                         name: this.editedItem.name,
                         nummer: this.editedItem.nummer,
-                        land: this.editedItem.land,
+                        land: this.editedItem.land.land_id,
                         rabatt: this.editedItem.rabatt
                     })
                     .then(
@@ -280,11 +281,12 @@ export default {
 
                     Object.assign(this.Lieferant[this.editedIndex], this.editedItem)
                 } else {
+                    console.log(this.editedItem.land)
                     axios.post(this.api_link+'lieferant',{
                         id: this.editedItem.id,
                         name: this.editedItem.name,
                         nummer: this.editedItem.nummer,
-                        land: this.editedItem.land,
+                        land: this.editedItem.land.land_id,
                         rabatt: this.editedItem.rabatt
                     })
                 .then(
