@@ -38,6 +38,7 @@
                                 :items="items_artikel"
                                 item-text="name"
                                 hide-no-data
+                                return-object
                             >
                                 <template v-slot:item="{ item }">
                                 <v-list-tile-content>
@@ -55,6 +56,7 @@
                                 :items="items_gebinde"
                                 item-text="name"
                                 hide-no-data
+                                return-object
                             >
                                 <template v-slot:item="{ item }">
                                 <v-list-tile-content>
@@ -164,6 +166,7 @@
                                 :items="items_entladung"
                                 item-text="name"
                                 hide-no-data
+                                return-object
                             >
                                 <template v-slot:item="{ item }">
                                 <v-list-tile-content>
@@ -210,13 +213,13 @@
     >
     <template v-slot:items="props">
         <tr :key="props.index" class="pointer_td">
-            <td @click="editItem(props.item)">{{ props.item.produkt }}</td>
-            <td @click="editItem(props.item)">{{ props.item.gebinde }}</td>
+            <td @click="editItem(props.item)">{{ props.item.produkt.name }}</td>
+            <td @click="editItem(props.item)">{{ props.item.gebinde.name }}</td>
             <td @click="editItem(props.item)">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
             <td @click="editItem(props.item)">{{ props.item.menge }}</td>
             <td @click="editItem(props.item)">{{ props.item.lieferant.name }}</td>
             <td @click="editItem(props.item)">{{ punkt_zu_komma(props.item.preis) }}€</td>
-            <td @click="editItem(props.item)">{{ props.item.entladung }}</td>
+            <td @click="editItem(props.item)">{{ props.item.entladung.name }}</td>
             <td @click="editItem(props.item)">{{ show_de_date(props.item.verladung) }}</td>
             <td @click="editItem(props.item)">{{ show_de_date(props.item.ankunft) }}</td>
             <td @click="editItem(props.item)">{{ props.item.we_nr }}</td>
@@ -283,13 +286,13 @@ import axios from 'axios';
         loading: false,
         dialog: false,
         headers: [
-            { text: 'Produkt', value: 'produkt', sortable: true, align: 'left'},
-            { text: 'Gebinde', value: 'gebinde', sortable: true, align: 'left'},
+            { text: 'Produkt', value: 'produkt.name', sortable: true, align: 'left'},
+            { text: 'Gebinde', value: 'gebinde.name', sortable: true, align: 'left'},
             { text: 'Paletten', value: 'paletten', sortable: true, align: 'left'},
             { text: 'Menge', value: 'menge', sortable: true, align: 'left'},
-            { text: 'Liefernat', value: 'lieferant', sortable: true, align: 'left'},
+            { text: 'Liefernat', value: 'lieferant.name', sortable: true, align: 'left'},
             { text: 'Preis', value: 'preis', sortable: true, align: 'left'},
-            { text: 'Entladung', value: 'entladung', sortable: true, align: 'left'},
+            { text: 'Entladung', value: 'entladung.name', sortable: true, align: 'left'},
             { text: 'Verladedatum', value: 'verladung', sortable: true, align: 'left'},
             { text: 'Ankunftsdatum', value: 'ankunft', sortable: true, align: 'left'},
             { text: 'WE', value: 'we_nr', sortable: true, align: 'left'},
@@ -407,15 +410,15 @@ import axios from 'axios';
 
                     axios.put(this.api_link + 'we',{
                         id: this.editedItem.id,
-                        produkt: this.editedItem.produkt,
-                        gebinde: this.editedItem.gebinde,
+                        produkt: this.editedItem.produkt.id,
+                        gebinde: this.editedItem.gebinde.id,
                         menge: this.editedItem.menge,
                         lieferant: this.editedItem.lieferant.id,
                         paletten: this.check_var_undifined(this.editedItem.paletten),
                         preis: this.check_var_undifined(this.editedItem.preis),
                         verladung: this.editedItem.verladung,
                         ankunft: this.editedItem.ankunft,
-                        entladung: this.editedItem.entladung,
+                        entladung: this.editedItem.entladung.id,
                         we_nr: this.editedItem.we_nr,
                         ls_nr: this.editedItem.ls_nr
                     })
@@ -442,15 +445,15 @@ import axios from 'axios';
 
                 axios.post(this.api_link + 'we',{
                         id: this.editedItem.id,
-                        produkt: this.editedItem.produkt,
-                        gebinde: this.editedItem.gebinde,
+                        produkt: this.editedItem.produkt.id,
+                        gebinde: this.editedItem.gebinde.id,
                         menge: this.editedItem.menge,
                         lieferant: this.editedItem.lieferant.id,
                         paletten: this.check_var_undifined(this.editedItem.paletten),
                         preis: this.check_var_undifined(this.editedItem.preis),
                         verladung: this.editedItem.verladung,
                         ankunft: this.editedItem.ankunft,
-                        entladung: this.editedItem.entladung,
+                        entladung: this.editedItem.entladung.id,
                         we_nr: this.editedItem.we_nr,
                         ls_nr: this.editedItem.ls_nr
                 })

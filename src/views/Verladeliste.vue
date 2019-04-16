@@ -75,13 +75,13 @@
                     >
                         <template v-slot:items="props">
                             <tr :style="{backgroundColor: colors(props.item.ankunft) }">
-                                <td class="text-xs-left">{{ props.item.produkt }}</td>
-                                <td class="text-xs-left">{{ props.item.gebinde }}</td>
+                                <td class="text-xs-left">{{ props.item.produkt.name }}</td>
+                                <td class="text-xs-left">{{ props.item.gebinde.name }}</td>
                                 <td class="text-xs-left">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
                                 <td class="text-xs-left">{{ props.item.menge }}</td>
-                                <td class="text-xs-left">{{ props.item.lieferant }}</td>
+                                <td class="text-xs-left">{{ props.item.lieferant.name }}</td>
                                 <td class="text-xs-left">{{ props.item.preis }}€</td>
-                                <td class="text-xs-left">{{ props.item.entladung }}</td>
+                                <td class="text-xs-left">{{ props.item.entladung.name }}</td>
                                 <td class="text-xs-left">{{ show_de_date(props.item.verladung) }}</td>                        
                                 <td class="text-xs-left">{{ show_de_date(props.item.ankunft) }}</td>
                                 <td class="text-xs-left">{{ props.item.we_nr }}</td>
@@ -123,13 +123,13 @@ export default {
     data() {
         return {
             headers: [
-                {text: "Produkt", value: "produkt", width: "21%", fixed: true, sortable: false, align: 'left'},
-                {text: "Gebinde", value: "gebinde", width: "10%", fixed: true, sortable: false, align: 'left'},
+                {text: "Produkt", value: "produkt.name", width: "21%", fixed: true, sortable: false, align: 'left'},
+                {text: "Gebinde", value: "gebinde.name", width: "10%", fixed: true, sortable: false, align: 'left'},
                 {text: "Paletten", value: "paletten", width: "5%", fixed: true, sortable: false, align: 'left'},
                 {text: "Menge", value: "menge", width: "3%", fixed: true, sortable: false, align: 'left'},
-                {text: "Lieferant", value: "lieferant", width: "14%", fixed: true, sortable: false, align: 'left'},
+                {text: "Lieferant", value: "lieferant.name", width: "14%", fixed: true, sortable: false, align: 'left'},
                 {text: "Preis", value: "preis", width: "3%", fixed: true, sortable: false, align: 'left'},
-                {text: "Entladung", value: "entladung", width: "10%", fixed: true, sortable: false, align: 'left'},
+                {text: "Entladung", value: "entladung.name", width: "10%", fixed: true, sortable: false, align: 'left'},
                 {text: "Verladung", value: "verladung", width: "10%", fixed: true, sortable: false, align: 'left'},
                 {text: "Ankunft", value: "ankunft", width: "10%", fixed: true, sortable: false, align: 'left'},
                 {text: "WE", value: "we_nr", width: "7%", fixed: true, sortable: false, align: 'left'},

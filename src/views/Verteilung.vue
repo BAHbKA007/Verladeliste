@@ -10,16 +10,16 @@
                     vertical
                 ></v-divider>
                 <v-spacer></v-spacer>
-                    <country-flag style="margin: 0 0px 18px 0" country="IT" size='normal'/><v-switch v-model="where_land" label="Italien" value="IT"></v-switch>
-                    <country-flag style="margin: 0 0px 18px 0" country="ES" size='normal'/><v-switch v-model="where_land" label="Spanien" value="ES"></v-switch>
-                    <country-flag style="margin: 0 0px 18px 0" country="FR" size='normal'/><v-switch v-model="where_land" label="Frankreich" value="FR"></v-switch>
-                    <country-flag style="margin: 0 0px 18px 0" country="DE" size='normal'/><v-switch v-model="where_land" label="Deutschland" value="DE"></v-switch>
+                    <country-flag style="margin: 0 0px 18px 0" country="IT" size='normal'/><v-switch v-model="where_land" label="Italien" value="109" @change="initialize"></v-switch>
+                    <country-flag style="margin: 0 0px 18px 0" country="ES" size='normal'/><v-switch v-model="where_land" label="Spanien" value="69" @change="initialize"></v-switch>
+                    <country-flag style="margin: 0 0px 18px 0" country="FR" size='normal'/><v-switch v-model="where_land" label="Frankreich" value="76" @change="initialize"></v-switch>
+                    <country-flag style="margin: 0 0px 18px 0" country="DE" size='normal'/><v-switch v-model="where_land" label="Deutschland" value="57" @change="initialize"></v-switch>
                 <v-spacer></v-spacer>
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-dialog v-model="dialog" max-width="60%" persistent>
                         <v-card>
                         <v-card-title>
-                            <span class="headline">{{editedItem.produkt}} in {{editedItem.gebinde}} von {{lieferant_name}}</span>
+                            <span class="headline">{{ umwandlung_editedItems.produkt_name }} bei {{ umwandlung_editedItems.entladung_name }} von {{ umwandlung_editedItems.lieferant_name}}</span>
                         </v-card-title>
 
                         <v-card-text>
@@ -70,13 +70,13 @@
         >
         <template v-slot:items="props">
                 <tr :key="props.index" class="pointer_td" :style="{backgroundColor: colors(props.item.ankunft) }">
-                    <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.produkt }}</td>
-                    <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.gebinde }}</td>
+                    <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.produkt.name }}</td>
+                    <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.gebinde.name }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.menge }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.lieferant.name }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.preis }}€</td>
-                    <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.entladung }}</td>
+                    <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.entladung.name }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ show_de_date(props.item.verladung) }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ show_de_date(props.item.ankunft) }}</td>
                     <td class="justify-center layout px-0" @click="split(props.item)">
@@ -109,8 +109,8 @@
                 <v-avatar>
                     <v-icon>check_circle</v-icon>
                 </v-avatar>
-                <strong>{{punkt_zu_komma(nullen_schneiden(tag.paletten))}} Pal. {{tag.produkt}}</strong>&nbsp;
-                <span>{{tag.lieferant}}</span>                
+                <strong>{{punkt_zu_komma(nullen_schneiden(tag.paletten))}} Pal. {{tag.produkt.name}}</strong>&nbsp;
+                <span>{{tag.lieferant.name}}</span>                
             </v-chip>
             <div><v-btn color="success" @click="create_lkw">{{sum_paletten}} paletten </v-btn></div>
         </div>
@@ -128,8 +128,12 @@ export default {
 
     data () {
         return {
-            lieferant_id: String,
-            lieferant_name: String,
+            umwandlung_editedItems: {
+                lieferant_id: String,
+                lieferant_name: String,
+                produkt_name: String,
+                entladung_name: String
+            },
             valid: false,
             rules: [
                 v => !!v || 'Feld darf nicht leer sein',
@@ -144,13 +148,13 @@ export default {
             },
             search: null,
             headers: [
-                { text: 'Produkt', value: 'produkt' },
-                { text: 'Gebinde', value: 'gebinde' },
+                { text: 'Produkt', value: 'produkt.name' },
+                { text: 'Gebinde', value: 'gebinde.name' },
                 { text: 'Paletten', value: 'paletten' },
                 { text: 'Menge', value: 'menge' },
-                { text: 'Lieferant', value: 'lieferant' },
+                { text: 'Lieferant', value: 'lieferant.name' },
                 { text: 'Preis', value: 'preis' },
-                { text: 'Entladung', value: 'entladung' },
+                { text: 'Entladung', value: 'entladung.name' },
                 { text: 'Verladung', value: 'verladung' },
                 { text: 'Ankunft', value: 'ankunft' },
                 { text: '', value: 'name', sortable: false, align: 'center' }
@@ -171,7 +175,7 @@ export default {
             timeout: 6000,
             verteil: [],
             isActive: false,
-            where_land: []
+            where_land: ['109','69','76','57']
         }
     },
 
@@ -193,8 +197,10 @@ export default {
         split(item) {
             this.editedIndex = this.wes.indexOf(item)
             this.editedItem = Object.assign({}, item)
-            this.lieferant_name = this.editedItem.lieferant.name
-            this.lieferant_id = this.editedItem.lieferant.id
+            this.umwandlung_editedItems.lieferant_name = this.editedItem.lieferant.name
+            this.umwandlung_editedItems.lieferant_id =this.editedItem.lieferant.id
+            this.umwandlung_editedItems.produkt_name = this.editedItem.produkt.name
+            this.umwandlung_editedItems.entladung_name =this.editedItem.entladung.name
             this.newItem = Object.assign({}, item)
             this.palettenfaktor = this.editedItem.menge / this.editedItem.paletten
             this.split_cache = this.editedItem.paletten
@@ -208,8 +214,12 @@ export default {
         },
         initialize() {
 
-            axios.get(this.api_link + 'we/1')
-            .then(resp => {this.wes = resp.data})
+            axios.post(this.api_link + 'we/where',{
+                land_array: this.where_land
+            })
+            .then(resp => {
+                this.wes = resp.data
+                })
             .catch(
                 err => (
                     this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
@@ -234,7 +244,6 @@ export default {
             if (this.$refs.form.validate()) {
             
                 this.computedItem = this.split_ber
-                console.log(this.lieferant_id)
 
                 axios.put(this.api_link + 'we',{
                     id: this.editedItem.id,
@@ -245,15 +254,15 @@ export default {
                     resp => {
                         if (resp.status === 200){
                             axios.post(this.api_link + 'we',{
-                                produkt: this.editedItem.produkt,
-                                gebinde: this.editedItem.gebinde,
+                                produkt: this.editedItem.produkt.id,
+                                gebinde: this.editedItem.gebinde.id,
                                 menge: this.computedItem.menge,
-                                lieferant: this.lieferant_id,
+                                lieferant: this.editedItem.lieferant.id,
                                 paletten: this.computedItem.paletten,
                                 preis: this.editedItem.preis,
                                 verladung: this.editedItem.verladung,
                                 ankunft: this.editedItem.ankunft,
-                                entladung: this.editedItem.entladung,
+                                entladung: this.editedItem.entladung.id,
                                 we_nr: this.editedItem.we_nr,
                                 ls_nr: this.editedItem.ls_nr
                             })
@@ -296,7 +305,7 @@ export default {
                 }
                 return data
             }            
-
+            console.log(data(this.verteil))
             axios({
                     url: this.api_link + 'lkw',
                     method: 'post',
@@ -304,6 +313,7 @@ export default {
                 })
                 .then(
                     resp => {
+                        console.log(resp)
                         if (resp.status === 201){
                             this.snack_text = 'Neuen LKW hinzugefügt',
                             this.snack_color = 'success',
