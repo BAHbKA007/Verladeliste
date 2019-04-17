@@ -236,7 +236,7 @@
                 style="margin:0 8px 0 0"
                 @click="copyItem(props.item)"
             >
-                file_copy
+                library_add
             </v-icon>
             <v-icon
                 small
