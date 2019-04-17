@@ -49,6 +49,7 @@
                 </v-card-text>
 
                 <v-card-actions>
+                    <v-btn color="red darken-1" flat @click="del(editedItem)">löschen</v-btn>
                     <v-spacer></v-spacer>
                     <v-btn color="blue darken-1" flat @click="close">abbrechen</v-btn>
                     <v-btn color="blue darken-1" flat @click="save">speichern</v-btn>
@@ -152,6 +153,29 @@ export default {
         }
     },
     methods: {
+        del (item) {
+            if(confirm('LKW löschen?')) {
+            axios.delete(this.api_link+'lkw/'+item.id)
+            .then(
+                resp => {
+                    if (resp.status === 200){
+                        this.snack_text = 'LKW gelöscht',
+                        this.snack_color = 'success',
+                        this.snackbar = true,
+                        this.getLkws()
+                    } 
+                }
+            )
+            .catch(
+                err => (
+                    this.snack_text = 'Da hat etwas nicht funktioniert :( delete' + err,
+                    this.snack_color = 'error',
+                    this.snackbar = true)
+                )
+            
+            this.close()
+            }
+        },
         getLkws() {
             axios.get(this.api_link + 'lkw?page=' + this.pagination.current)
                 .then(response => {
@@ -192,7 +216,7 @@ export default {
             .then(
                 resp => {
                     if (resp.status === 200){
-                        this.snack_text = 'Wareneingang erfolgreich geändert',
+                        this.snack_text = 'LKW erfolgreich geändert',
                         this.snack_color = 'success',
                         this.snackbar = true
                     } 

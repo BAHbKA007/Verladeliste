@@ -14,6 +14,7 @@
                     <country-flag style="margin: 0 0px 18px 0" country="ES" size='normal'/><v-switch v-model="where_land" label="Spanien" value="69" @change="initialize"></v-switch>
                     <country-flag style="margin: 0 0px 18px 0" country="FR" size='normal'/><v-switch v-model="where_land" label="Frankreich" value="76" @change="initialize"></v-switch>
                     <country-flag style="margin: 0 0px 18px 0" country="DE" size='normal'/><v-switch v-model="where_land" label="Deutschland" value="57" @change="initialize"></v-switch>
+                    <country-flag style="margin: 0 0px 18px 0" country="BE" size='normal'/><v-switch v-model="where_land" label="Belgien" value="20" @change="initialize"></v-switch>
                 <v-spacer></v-spacer>
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-dialog v-model="dialog" max-width="60%" persistent>
@@ -79,8 +80,8 @@
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.entladung.name }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ show_de_date(props.item.verladung) }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ show_de_date(props.item.ankunft) }}</td>
-                    <td class="justify-center layout px-0" @click="split(props.item)">
-                        <v-icon small>call_split </v-icon>
+                    <td class="justify-center layout px-0">
+                        <v-icon small @click="split(props.item)">call_split </v-icon>&nbsp;
                     </td>
                 </tr>
         </template>
@@ -172,10 +173,10 @@ export default {
             snack_text: '',
             snack_color: '',
             mode: 'multi-line',
-            timeout: 6000,
+            timeout: 2000,
             verteil: [],
             isActive: false,
-            where_land: ['109','69','76','57']
+            where_land: ['109','69','76','57','20'],
         }
     },
 
@@ -186,6 +187,15 @@ export default {
     },
 
     methods: {
+        create_land_array(){
+
+            var laender = []
+            for (let i = 0; i < this.wes.length; i++) {
+                laender.push(this.wes[i].lieferant.land_id)
+            }
+
+            return laender
+        },
         close_chip (we) {
             const index = this.verteil.indexOf(we)
             this.verteil.splice(index, 1)
@@ -227,6 +237,23 @@ export default {
                     this.snackbar = true)
                 );
         },
+
+        reinitialize() {
+
+            axios.post(this.api_link + 'we/where',{
+                land_array: this.where_land
+            })
+            .then(resp => {
+                this.wes = resp.data
+                })
+            .catch(
+                err => (
+                    this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    this.snack_color = 'error',
+                    this.snackbar = true)
+                );
+        },
+
         editItem (item) {
             this.editedIndex = this.wes.indexOf(item)
             this.editedItem = Object.assign({}, item)
@@ -305,7 +332,6 @@ export default {
                 }
                 return data
             }            
-            console.log(data(this.verteil))
             axios({
                     url: this.api_link + 'lkw',
                     method: 'post',
@@ -313,7 +339,6 @@ export default {
                 })
                 .then(
                     resp => {
-                        console.log(resp)
                         if (resp.status === 201){
                             this.snack_text = 'Neuen LKW hinzugefügt',
                             this.snack_color = 'success',

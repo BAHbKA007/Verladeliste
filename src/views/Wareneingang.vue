@@ -20,7 +20,7 @@
         <v-form ref="form" v-model="valid" lazy-validation>
             <v-dialog v-model="dialog" max-width="60%" persistent >
                 <template v-slot:activator="{ on }">
-                    <v-btn color="primary" dark class="mb-2" v-on="on" @click="search_api">Neuen Wareneingang anlegen</v-btn>
+                    <v-btn color="primary" dark class="mb-2" v-on="on" @click="search_api();set_title()">Neuen Wareneingang anlegen</v-btn>
                 </template>
                 <v-card>
                 <v-card-title>
@@ -212,7 +212,7 @@
         :loading="loading"
     >
     <template v-slot:items="props">
-        <tr :key="props.index" class="pointer_td">
+        <tr :key="props.index" class="pointer_td" :style="{backgroundColor: colors(props.item.ankunft) }">
             <td @click="editItem(props.item)">{{ props.item.produkt.name }}</td>
             <td @click="editItem(props.item)">{{ props.item.gebinde.name }}</td>
             <td @click="editItem(props.item)">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
@@ -231,6 +231,13 @@
                 @click="editItem(props.item)"
             >
                 edit
+            </v-icon>
+            <v-icon
+                small
+                style="margin:0 8px 0 0"
+                @click="copyItem(props.item)"
+            >
+                file_copy
             </v-icon>
             <v-icon
                 small
@@ -267,6 +274,7 @@ import axios from 'axios';
 
   export default {
     data: () => ({
+        formTitle: String,
         pagination: {
             sortBy: 'ankunft',
             descending: true
@@ -307,17 +315,11 @@ import axios from 'axios';
         snack_text: '',
         snack_color: '',
         mode: 'multi-line',
-        timeout: 6000,
+        timeout: 2000,
         rules: [
            v => !!v || 'Feld darf nicht leer sein'
         ]
     }),
-
-    computed: {
-        formTitle () {
-            return this.editedIndex === -1 ? 'Neuen Wareneingang anlegen' : 'Wareneingang bearbeiten'
-        }
-    },
 
     watch: {
         dialog (val) {
@@ -330,6 +332,9 @@ import axios from 'axios';
     },
 
     methods: {
+        set_title() {
+            this.formTitle = 'Neuen WE anlegen'
+        },
 
         search_api () {
             // Items have already been loaded
@@ -375,6 +380,15 @@ import axios from 'axios';
         },
 
         editItem (item) {
+            this.formTitle = 'Wareneingang bearbeiten'
+            this.search_api()
+            this.editedIndex = this.Wareneingang.indexOf(item)
+            this.editedItem = Object.assign({}, item)
+            this.dialog = true
+        },
+
+        copyItem (item) {
+            this.formTitle = 'Kopie erstellen'
             this.search_api()
             this.editedIndex = this.Wareneingang.indexOf(item)
             this.editedItem = Object.assign({}, item)
@@ -404,7 +418,8 @@ import axios from 'axios';
 
         save () {
             if (this.$refs.form.validate()) {
-                if (this.editedIndex > -1) {
+                                        
+                if (this.editedIndex > -1 && this.formTitle != 'Kopie erstellen') {
 
                     // Bearbeiten
 
