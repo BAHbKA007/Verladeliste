@@ -7,6 +7,8 @@ import 'vuetify/dist/vuetify.min.css'
 import de from 'vuetify/src/locale/de.ts'
 import router from './router'
 import CountryFlag from 'vue-country-flag'
+import 'material-design-icons/iconfont/material-icons.css'
+import 'typeface-roboto/index.css'
 
 
 Vue.component('vue-country-flag', CountryFlag)
