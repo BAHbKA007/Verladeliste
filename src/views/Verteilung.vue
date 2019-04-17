@@ -10,11 +10,8 @@
                     vertical
                 ></v-divider>
                 <v-spacer></v-spacer>
-                    <country-flag style="margin: 0 0px 18px 0" country="IT" size='normal'/><v-switch v-model="where_land" label="Italien" value="109" @change="initialize"></v-switch>
-                    <country-flag style="margin: 0 0px 18px 0" country="ES" size='normal'/><v-switch v-model="where_land" label="Spanien" value="69" @change="initialize"></v-switch>
-                    <country-flag style="margin: 0 0px 18px 0" country="FR" size='normal'/><v-switch v-model="where_land" label="Frankreich" value="76" @change="initialize"></v-switch>
-                    <country-flag style="margin: 0 0px 18px 0" country="DE" size='normal'/><v-switch v-model="where_land" label="Deutschland" value="57" @change="initialize"></v-switch>
-                    <country-flag style="margin: 0 0px 18px 0" country="BE" size='normal'/><v-switch v-model="where_land" label="Belgien" value="20" @change="initialize"></v-switch>
+                    <div v-for="item in where_land_cache" v-bind:key="item" :v-switch="item"><country-flag style="margin: -15px 0 0 0;float:left" :country="laender[item-1].land_name" size='normal' />
+                    <v-switch v-model="where_land" :label="laender[item-1].land_name" :value="item" @change="initialize" ></v-switch></div>
                 <v-spacer></v-spacer>
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-dialog v-model="dialog" max-width="60%" persistent>
@@ -176,14 +173,16 @@ export default {
             timeout: 2000,
             verteil: [],
             isActive: false,
-            where_land: ['109','69','76','57','20'],
+            where_land: [],
+            where_land_cache: [],
+            laender: []
         }
     },
 
     props:  ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link'],
 
     created () {
-        this.initialize()
+        this.firstInit()
     },
 
     methods: {
@@ -238,14 +237,35 @@ export default {
                 );
         },
 
-        reinitialize() {
+        firstInit() {
 
-            axios.post(this.api_link + 'we/where',{
-                land_array: this.where_land
-            })
+            axios.get(this.api_link + 'we/where/first')
             .then(resp => {
                 this.wes = resp.data
+
+                // Länder Ids rausholen und Distinct im array speichern 
+                var element = [];
+                for (let i = 0; i < this.wes.length; i++) {
+                    
+                    if (!element.includes(this.wes[i].lieferant.land_id.toString())) { element.push(this.wes[i].lieferant.land_id.toString()) } 
+                }
+
+                this.where_land = element
+                this.where_land_cache = element
+
                 })
+            .catch(
+                err => (
+                    this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    this.snack_color = 'error',
+                    this.snackbar = true)
+                );
+
+            // Länder Array holen
+            axios.get(this.api_link + 'land')
+            .then(resp => {
+                this.laender = resp.data
+            })
             .catch(
                 err => (
                     this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,

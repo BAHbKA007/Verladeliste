@@ -200,16 +200,15 @@
         </v-form>
 
     </v-toolbar>
+    
     <v-data-table
    
         :headers="headers"
         :items="Wareneingang"
         class="elevation-1"
-        :rows-per-page-items="pagination_rows"
-        rows-per-page-text='Wareneingangä pro Seite'
-        :pagination.sync="pagination"
         :search="search"
         :loading="loading"
+        hide-actions
     >
     <template v-slot:items="props">
         <tr :key="props.index" class="pointer_td" :style="{backgroundColor: colors(props.item.ankunft) }">
@@ -249,6 +248,12 @@
         </tr>
     </template>
     </v-data-table>
+    <v-pagination
+        style="margin-top: 19px"
+        v-model="pagination.current"
+        :length="pagination.total"
+        @input="onPageChange"
+    ></v-pagination>
     <v-snackbar
       v-model="snackbar"
       :color="snack_color"
@@ -276,8 +281,8 @@ import axios from 'axios';
     data: () => ({
         formTitle: String,
         pagination: {
-            sortBy: 'ankunft',
-            descending: true
+            current: 1,
+            total: 0
         },
         pagination_rows: [200,500,1000,{"text":"$vuetify.dataIterator.rowsPerPageAll","value":-1}],
         isLoading: true,
@@ -328,10 +333,27 @@ import axios from 'axios';
     },
 
     created () {
-      this.initialize()
+      this.getWes()
     },
 
     methods: {
+         onPageChange() {
+            this.getWes();
+        },
+        getWes() {
+            axios.get(this.api_link + 'we?page=' + this.pagination.current)
+                .then(response => {
+                    this.Wareneingang = response.data.data;
+                    this.pagination.current = response.data.meta.current_page;
+                    this.pagination.total = response.data.meta.last_page;
+                })                    
+                .catch(
+                    err => {
+                        this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                        this.snack_color = 'error',
+                        this.snackbar = true}
+                );
+        },
         set_title() {
             this.formTitle = 'Neuen WE anlegen'
         },
@@ -369,8 +391,7 @@ import axios from 'axios';
             this.loading = true
             axios.get(this.api_link+'we')
             .then(res => this.Wareneingang = res.data,)
-            .catch(err => 
-                    err => (
+            .catch(err => (
                         this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                         this.snack_color = 'error',
                         this.snackbar = true)
