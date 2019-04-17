@@ -293,7 +293,7 @@ export default {
                 this.computedItem = this.split_ber
 
                 axios.put(this.api_link + 'we',{
-                    id: this.editedItem.id,
+                    id: this.editedItem.produkt.id,
                     menge: this.computedItem.menge_alt,
                     paletten: this.editedItem.paletten,
                 })
