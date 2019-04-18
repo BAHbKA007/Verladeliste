@@ -193,21 +193,18 @@ export default {
     methods: {
 
         api_land () {
-            // Items have already been loaded
-            if (this.items_land.length > 0) return
-            this.isLoading = true
-            // Lazily load input items
-            fetch(this.api_link + 'land')
-            .then(res => res.json())
-            .then(res => {
-                this.items_land = res
-            })
-            .catch(err => {
-                this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                this.snack_color = 'error',
-                this.snackbar = true
-            })
-            .finally(() => (this.isLoading = false))
+            axios.get(this.api_link+'land')
+            .then(
+                resp => {
+                    this.items_land = resp.data
+                })
+            .catch(
+                err => {
+                    this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    this.snack_color = 'error',
+                    this.snackbar = true}
+                );
+
         },
 
         nullen_schneiden(vari) {

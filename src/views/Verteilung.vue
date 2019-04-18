@@ -11,7 +11,7 @@
                 ></v-divider>
                 <v-spacer></v-spacer>
                     <div v-for="item in where_land_cache" v-bind:key="item" :v-switch="item"><country-flag style="margin: -15px 0 0 0;float:left" :country="laender[item-1].land_name" size='normal' />
-                    <v-switch v-model="where_land" :label="laender[item-1].land_name" :value="item" @change="initialize" ></v-switch></div>
+                    <v-switch :disabled="switch_disable" v-model="where_land" :label="laender[item-1].land_name" :value="item" @change="initialize" ></v-switch></div>
                 <v-spacer></v-spacer>
                 <v-form ref="form" v-model="valid" lazy-validation>
                     <v-dialog v-model="dialog" max-width="60%" persistent>
@@ -65,6 +65,7 @@
         hide-actions
         :pagination.sync="pagination"
         class="elevation-1"
+        v-bind:class="{ active: switch_disable }"
         >
         <template v-slot:items="props">
                 <tr :key="props.index" class="pointer_td" :style="{backgroundColor: colors(props.item.ankunft) }">
@@ -77,7 +78,7 @@
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ props.item.entladung.name }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ show_de_date(props.item.verladung) }}</td>
                     <td @click="remove_wes(props.item)" class="text-xs-left">{{ show_de_date(props.item.ankunft) }}</td>
-                    <td class="justify-center layout px-0">
+                    <td class="justify-center layout px-0 icons_center">
                         <v-icon small @click="split(props.item)">call_split </v-icon>&nbsp;
                     </td>
                 </tr>
@@ -172,10 +173,9 @@ export default {
             mode: 'multi-line',
             timeout: 2000,
             verteil: [],
-            isActive: false,
             where_land: [],
             where_land_cache: [],
-            laender: []
+            laender: [{"land_name":null}]
         }
     },
 
@@ -186,6 +186,7 @@ export default {
     },
 
     methods: {
+
         create_land_array(){
 
             var laender = []
@@ -199,9 +200,6 @@ export default {
             const index = this.verteil.indexOf(we)
             this.verteil.splice(index, 1)
             this.wes.push(we)
-            if (this.sum_paletten == 0) {
-                this.isActive = false
-            }
         },
         split(item) {
             this.editedIndex = this.wes.indexOf(item)
@@ -216,7 +214,6 @@ export default {
             this.dialog = true
         },
         remove_wes(we) {
-            this.isActive = true
             const index = this.wes.indexOf(we)
             this.wes.splice(index, 1)
             this.verteil.push(we)
@@ -242,7 +239,6 @@ export default {
             axios.get(this.api_link + 'we/where/first')
             .then(resp => {
                 this.wes = resp.data
-
                 // Länder Ids rausholen und Distinct im array speichern 
                 var element = [];
                 for (let i = 0; i < this.wes.length; i++) {
@@ -293,7 +289,7 @@ export default {
                 this.computedItem = this.split_ber
 
                 axios.put(this.api_link + 'we',{
-                    id: this.editedItem.produkt.id,
+                    id: this.editedItem.id,
                     menge: this.computedItem.menge_alt,
                     paletten: this.editedItem.paletten,
                 })
@@ -325,7 +321,7 @@ export default {
                                 )
                             .catch(
                                 err => (
-                                    this.snack_text = 'Da hat etwas nicht funktioniert :(' + err,
+                                    this.snack_text = 'Da hat etwas nicht funktioniert (neuer LKW) :(' + err,
                                     this.snack_color = 'error',
                                     this.snackbar = true)
                                 );
@@ -335,7 +331,7 @@ export default {
                     )
                 .catch(
                     err => {
-                        this.snack_text = 'Da hat etwas nicht funktioniert :(' + err,
+                        this.snack_text = 'Da hat etwas nicht funktioniert (lkw bearbeiten) :(' + err,
                         this.snack_color = 'error',
                         this.snackbar = true}
                     );
@@ -378,6 +374,13 @@ export default {
         }
     },
     computed: {
+        switch_disable(){
+            if (this.verteil.length > 0) {
+                return true
+            } else {
+                return false
+            }
+        },
         split_ber() {
             var a = {}
             a.menge_alt = this.editedItem.paletten * this.palettenfaktor
@@ -417,7 +420,7 @@ export default {
     }
 
     .active {
-        margin-bottom: 88px;
+        margin-bottom: 121px;
     }
 
 </style>

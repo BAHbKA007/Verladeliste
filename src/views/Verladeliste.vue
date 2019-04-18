@@ -1,21 +1,21 @@
 <template>
     <div>
         <v-toolbar>
-        <v-text-field
-            v-model="search"
-            :search-input.sync="search"
-            prepend-icon="search"
-            label="Verladung durchsuchen"
-            single-line
-            hide-details
-            clearable
-        ></v-text-field>
-        <v-divider
-            class="mx-2"
-            inset
-            vertical
-        ></v-divider>
-        <v-spacer></v-spacer>
+            <v-container>
+                <v-layout>
+
+                    <v-flex
+                    xs12
+                    md4
+                    >
+                    <v-text-field
+                        v-model="lastname"
+                        label="Last name"
+                    ></v-text-field>
+                    </v-flex>
+                    
+                </v-layout>
+            </v-container>
         </v-toolbar>
 
         <v-dialog v-model="dialog" max-width="50%" persistent>

@@ -77,6 +77,10 @@ export default {
     height: 25px !important;
 }
 
+
+.icons_center {
+  padding-top: 4px !important;
+}
 </style>
 
 

@@ -208,6 +208,7 @@
         class="elevation-1"
         :search="search"
         :loading="loading"
+        :pagination.sync="pagination"
         hide-actions
     >
     <template v-slot:items="props">
@@ -217,13 +218,13 @@
             <td @click="editItem(props.item)">{{ punkt_zu_komma(nullen_schneiden(props.item.paletten)) }}</td>
             <td @click="editItem(props.item)">{{ props.item.menge }}</td>
             <td @click="editItem(props.item)">{{ props.item.lieferant.name }}</td>
-            <td @click="editItem(props.item)">{{ punkt_zu_komma(props.item.preis) }}€</td>
+            <td @click="editItem(props.item)" style="text-align:right">{{ punkt_zu_komma(props.item.preis) }}€</td>
             <td @click="editItem(props.item)">{{ props.item.entladung.name }}</td>
             <td @click="editItem(props.item)">{{ show_de_date(props.item.verladung) }}</td>
             <td @click="editItem(props.item)">{{ show_de_date(props.item.ankunft) }}</td>
             <td @click="editItem(props.item)">{{ props.item.we_nr }}</td>
-            <td @click="editItem(props.item)">{{ props.item.ls_nr }}</td>
-            <td class="justify-center layout px-0">
+            <td @click="editItem(props.item)" style="padding-top:5px">{{ props.item.ls_nr }}</td>
+            <td class="justify-center layout px-0 icons_center">
             <v-icon
                 small
                 class="mr-2"
@@ -236,7 +237,7 @@
                 style="margin:0 8px 0 0"
                 @click="copyItem(props.item)"
             >
-                library_add
+                content_copy
             </v-icon>
             <v-icon
                 small
@@ -284,7 +285,11 @@ import axios from 'axios';
             current: 1,
             total: 0
         },
-        pagination_rows: [200,500,1000,{"text":"$vuetify.dataIterator.rowsPerPageAll","value":-1}],
+        pagination: {
+                sortBy: 'ankunft',
+                descending: true,
+                rowsPerPage: -1
+            },
         isLoading: true,
         items_lieferant: [],
         items_artikel: [],
@@ -303,8 +308,8 @@ import axios from 'axios';
             { text: 'Gebinde', value: 'gebinde.name', sortable: true, align: 'left'},
             { text: 'Paletten', value: 'paletten', sortable: true, align: 'left'},
             { text: 'Menge', value: 'menge', sortable: true, align: 'left'},
-            { text: 'Liefernat', value: 'lieferant.name', sortable: true, align: 'left'},
-            { text: 'Preis', value: 'preis', sortable: true, align: 'left'},
+            { text: 'Lieferant', value: 'lieferant.name', sortable: true, align: 'left'},
+            { text: 'Preis', value: 'preis', sortable: true, align: 'right'},
             { text: 'Entladung', value: 'entladung.name', sortable: true, align: 'left'},
             { text: 'Verladedatum', value: 'verladung', sortable: true, align: 'left'},
             { text: 'Ankunftsdatum', value: 'ankunft', sortable: true, align: 'left'},
@@ -387,19 +392,6 @@ import axios from 'axios';
             }
             return vari
         },
-        initialize () {
-            this.loading = true
-            axios.get(this.api_link+'we')
-            .then(res => this.Wareneingang = res.data,)
-            .catch(err => (
-                        this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                        this.snack_color = 'error',
-                        this.snackbar = true)
-                    ); /* eslint-disable-line no-console */
-            this.loading = false
-
-        },
-
         editItem (item) {
             this.formTitle = 'Wareneingang bearbeiten'
             this.search_api()
@@ -463,7 +455,8 @@ import axios from 'axios';
                             if (resp.status === 200){
                                 this.snack_text = 'Wareneingang erfolgreich geändert',
                                 this.snack_color = 'success',
-                                this.snackbar = true
+                                this.snackbar = true,
+                                this.getWes()
                             }
                             }
                         )
@@ -499,7 +492,7 @@ import axios from 'axios';
                             this.snack_text = 'Wareneingang erfolgreich hinzugefügt',
                             this.snack_color = 'success',
                             this.snackbar = true,
-                            this.initialize()
+                            this.getWes()
                         } 
                         }
                     )
