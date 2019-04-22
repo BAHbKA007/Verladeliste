@@ -55,7 +55,7 @@
       <template v-slot:items="props">
 
         <td>{{ props.item.name }}</td>
-        <td class="justify-center layout px-0">
+        <td class="justify-center icons_center layout px-0">
           <v-icon
             small
             class="mr-2"

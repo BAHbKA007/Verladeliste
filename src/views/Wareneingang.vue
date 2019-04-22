@@ -18,7 +18,7 @@
       <v-spacer></v-spacer>
 
         <v-form ref="form" v-model="valid" lazy-validation>
-            <v-dialog v-model="dialog" max-width="60%" persistent >
+            <v-dialog v-model="dialog" max-width="60%" persistent>
                 <template v-slot:activator="{ on }">
                     <v-btn color="primary" dark class="mb-2" v-on="on" @click="search_api();set_title()">Neuen Wareneingang anlegen</v-btn>
                 </template>
@@ -281,10 +281,6 @@ import axios from 'axios';
   export default {
     data: () => ({
         formTitle: String,
-        pagination: {
-            current: 1,
-            total: 0
-        },
         pagination: {
                 sortBy: 'ankunft',
                 descending: true,

@@ -24,7 +24,7 @@
                             <v-container grid-list-md>
                             <v-layout wrap>
                                 <v-flex xs12 sm6 md6>
-                                <v-text-field v-model="editedItem.paletten" type="number" min="0" :max="split_cache" :rules="rules" label="Paletten alter WE"></v-text-field>
+                                <v-text-field v-model="editedItem.paletten" type="number" min="0" :max="split_cache" :rules="rules" @blur="input_validate" label="Paletten alter WE"></v-text-field>
                                 </v-flex>
                                 <v-flex xs12 sm6 md6>
                                 <v-text-field v-model="split_ber.menge_alt" disabled type="number" min="0" readonly label="Menge alter WE"></v-text-field>
@@ -43,7 +43,7 @@
                         <v-card-actions>
                             <v-spacer></v-spacer>
                             <v-btn color="blue darken-1" flat @click="close">abbrechen</v-btn>
-                            <v-btn color="blue darken-1" flat @click="save">splitten</v-btn>
+                            <v-btn color="blue darken-1" :disabled="form_valiadation" flat @click="save">splitten</v-btn>
                         </v-card-actions>
                         </v-card>
                     </v-dialog>
@@ -161,7 +161,7 @@ export default {
             wes: [],
             dialog: false,
             palettenfaktor: 0,
-            split_cache:0,
+            split_cache: 0,
             editedIndex: -1,
             defaultItem: {},
             editedItem: {},
@@ -175,7 +175,8 @@ export default {
             verteil: [],
             where_land: [],
             where_land_cache: [],
-            laender: [{"land_name":null}]
+            laender: [{"land_name":null}],
+            form_valiadation: true
         }
     },
 
@@ -186,6 +187,13 @@ export default {
     },
 
     methods: {
+        input_validate() {
+            if (this.editedItem.paletten < Number(this.split_cache) && this.editedItem.paletten >= 0 && this.editedItem.paletten ) {
+                this.form_valiadation = false
+            }else{
+                this.form_valiadation = true
+            }
+        },
 
         create_land_array(){
 
@@ -284,60 +292,58 @@ export default {
             }, 300)
         },
         save () {
-            if (this.$refs.form.validate()) {
-            
-                this.computedItem = this.split_ber
+           
+            this.computedItem = this.split_ber
 
-                axios.put(this.api_link + 'we',{
-                    id: this.editedItem.id,
-                    menge: this.computedItem.menge_alt,
-                    paletten: this.editedItem.paletten,
-                })
-                .then(
-                    resp => {
-                        if (resp.status === 200){
-                            axios.post(this.api_link + 'we',{
-                                produkt: this.editedItem.produkt.id,
-                                gebinde: this.editedItem.gebinde.id,
-                                menge: this.computedItem.menge,
-                                lieferant: this.editedItem.lieferant.id,
-                                paletten: this.computedItem.paletten,
-                                preis: this.editedItem.preis,
-                                verladung: this.editedItem.verladung,
-                                ankunft: this.editedItem.ankunft,
-                                entladung: this.editedItem.entladung.id,
-                                we_nr: this.editedItem.we_nr,
-                                ls_nr: this.editedItem.ls_nr
-                            })
-                            .then(
-                                resp => {
-                                    if (resp.status === 201){
-                                        this.snack_text = 'gesplittet',
-                                        this.snack_color = 'success',
-                                        this.snackbar = true,
-                                        this.initialize()
-                                    } 
-                                    }
-                                )
-                            .catch(
-                                err => (
-                                    this.snack_text = 'Da hat etwas nicht funktioniert (neuer LKW) :(' + err,
-                                    this.snack_color = 'error',
-                                    this.snackbar = true)
-                                );
-                            Object.assign(this.wes[this.editedIndex], this.editedItem)
-                        } 
-                    }
-                    )
-                .catch(
-                    err => {
-                        this.snack_text = 'Da hat etwas nicht funktioniert (lkw bearbeiten) :(' + err,
-                        this.snack_color = 'error',
-                        this.snackbar = true}
-                    );
+            axios.put(this.api_link + 'we',{
+                id: this.editedItem.id,
+                menge: this.computedItem.menge_alt,
+                paletten: this.editedItem.paletten,
+            })
+            .then(
+                resp => {
+                    if (resp.status === 200){
+                        axios.post(this.api_link + 'we',{
+                            produkt: this.editedItem.produkt.id,
+                            gebinde: this.editedItem.gebinde.id,
+                            menge: this.computedItem.menge,
+                            lieferant: this.editedItem.lieferant.id,
+                            paletten: this.computedItem.paletten,
+                            preis: this.editedItem.preis,
+                            verladung: this.editedItem.verladung,
+                            ankunft: this.editedItem.ankunft,
+                            entladung: this.editedItem.entladung.id,
+                            we_nr: this.editedItem.we_nr,
+                            ls_nr: this.editedItem.ls_nr
+                        })
+                        .then(
+                            resp => {
+                                if (resp.status === 201){
+                                    this.snack_text = 'gesplittet',
+                                    this.snack_color = 'success',
+                                    this.snackbar = true,
+                                    this.initialize()
+                                } 
+                                }
+                            )
+                        .catch(
+                            err => (
+                                this.snack_text = 'Da hat etwas nicht funktioniert (neuer LKW) :(' + err,
+                                this.snack_color = 'error',
+                                this.snackbar = true)
+                            );
+                        Object.assign(this.wes[this.editedIndex], this.editedItem)
+                    } 
+                }
+                )
+            .catch(
+                err => {
+                    this.snack_text = 'Da hat etwas nicht funktioniert (lkw bearbeiten) :(' + err,
+                    this.snack_color = 'error',
+                    this.snackbar = true}
+                );
 
-                this.close()
-            }         
+            this.close()
         },
         create_lkw () {
 

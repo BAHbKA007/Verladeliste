@@ -4,16 +4,7 @@
             <v-container>
                 <v-layout>
 
-                    <v-flex
-                    xs12
-                    md4
-                    >
-                    <v-text-field
-                        v-model="lastname"
-                        label="Last name"
-                    ></v-text-field>
-                    </v-flex>
-                    
+                   
                 </v-layout>
             </v-container>
         </v-toolbar>

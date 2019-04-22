@@ -1,6 +1,6 @@
 <template>
   <v-app :dark="dark">
-    <Toolbar app></Toolbar>
+    <Toolbar app :api_link='api_link'></Toolbar>
     <v-content>
       <v-container fluid>
         <router-view :api_link='api_link' :footer_show='footer_show' :punkt_zu_komma="punkt_zu_komma" :nullen_schneiden="nullen_schneiden" :colors="colors" :show_de_date="show_de_date"></router-view>
@@ -79,7 +79,7 @@ export default {
 
 
 .icons_center {
-  padding-top: 4px !important;
+  padding-top: 5px !important;
 }
 </style>
 
