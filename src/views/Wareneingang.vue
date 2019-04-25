@@ -208,6 +208,7 @@
         class="elevation-1"
         :search="Wareneingang_data.search"
         hide-actions
+        v-bind:pagination.sync="Wareneingang_data.pagination"
     >
     <template v-slot:items="props">
         <tr :key="props.index" class="pointer_td" :style="{backgroundColor: colors(props.item.ankunft) }">

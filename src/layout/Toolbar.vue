@@ -5,13 +5,14 @@
             <v-btn flat to="/">Verladeliste</v-btn>
             <v-btn flat to="/Wareneingang">Wareneingang</v-btn>
             <v-btn flat to="/Verteilung">Verteilung</v-btn>
-            <v-flex xs12 sm3>
+            <v-flex xs12 sm3 v-if="this.$route.path != '/Verteilung'">
                 <v-select
                 v-model="kw_select"
                 hight="20px"
                 class="styled-input"
                 :items="Kalenderwoche"
                 prefix="KW"
+                item-value="last"
                 @change="getKW()"
                 ></v-select>
             </v-flex>
@@ -55,7 +56,7 @@ export default {
     data() {
         return {
             Kalenderwoche: [],
-            kw_select: 0
+            kw_select: 1
         }
     },
     methods: {
@@ -67,7 +68,8 @@ export default {
         get_kws() {
             axios.get(this.api_link + 'kw')
             .then(response => {
-                this.Kalenderwoche = response.data
+                this.Kalenderwoche = response.data,
+                this.kw_select = globalStore.kw
             })                    
             .catch(
                 err => {
@@ -78,7 +80,7 @@ export default {
         }
     },
     created() {
-        this.get_kws();
+        this.get_kws()
     },
     props: ['api_link','Wareneingang_data','getWes','getLkws']
 }

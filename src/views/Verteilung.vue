@@ -65,6 +65,7 @@
         hide-actions
         class="elevation-1"
         v-bind:class="{ active: switch_disable }"
+        v-bind:pagination.sync="Verteilung_data.pagination"
         >
         <template v-slot:items="props">
                 <tr :key="props.index" class="pointer_td" :style="{backgroundColor: colors(props.item.ankunft) }">
@@ -246,7 +247,6 @@ export default {
                 .then(
                     resp => {
                         if (resp.status === 201){
-                            console.log(resp)        
                             this.Verteilung_data.snack_text = 'Neuen LKW hinzugefügt',
                             this.Verteilung_data.snack_color = 'success',
                             this.Verteilung_data.snackbar = true,

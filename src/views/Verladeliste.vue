@@ -39,7 +39,7 @@
             </v-card>
         </v-dialog>
 
-        <div v-for="item in this.Lkws_data" v-bind:key="item.id" :style="{backgroundColor: colors(item.ankunft)}" @click="editLkws(item)" style="cursor: pointer">
+        <div v-for="item in this.Lkws_data.lkws" v-bind:key="item.id" :style="{backgroundColor: colors(item.ankunft)}" @click="editLkws(item)" style="cursor: pointer">
             <div class="head">
                 <div>
                     <strong v-show="item.lkw != undefined && item.lkw != ''">LKW:</strong> {{item.lkw}} <strong v-show="item.spedition != undefined && item.spedition != ''">Spedition:</strong> {{item.spedition}} <strong v-show="item.frachtkosten != undefined && item.spedition != ''">Frachtkosten:</strong> <span v-show="item.frachtkosten != undefined && item.frachtkosten !=''"> {{item.frachtkosten}} €</span>

@@ -60,8 +60,13 @@ export default {
 			'http://localhost/verladeliste-api/public/api/',
 
 			Verteilung_data: {
-				kw: globalStore.globalvar,
-				umwandlung_editedItems: {
+                kw: globalStore.globalvar,
+				pagination: {
+						sortBy: 'ankunft',
+						descending: false,
+						rowsPerPage: -1
+                    },
+                    umwandlung_editedItems: {
 					lieferant_id: String,
 					lieferant_name: String,
 					produkt_name: String,
@@ -264,7 +269,7 @@ export default {
 				);
 		},
 		getLkws() {
-            axios.post(this.api_link + 'lkw', {
+            axios.post(this.api_link + 'lkw/kw', {
 				kw: globalStore.kw
 			})
                 .then(resp => {
@@ -310,13 +315,14 @@ export default {
         }        
 	},
 	created(){
-		//Wareneingang
-		this.getWes(),
-		//Verteilung
-		this.firstInit(),
-		//Verladeliste
-		this.getLkws()
-	}
+		// //Wareneingang
+		// this.getWes(),
+		// //Verteilung
+		this.firstInit()
+		// //Verladeliste
+		// this.getLkws()
+    }
+    
 }
 </script>
 
