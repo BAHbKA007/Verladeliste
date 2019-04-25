@@ -1,15 +1,6 @@
 <template>
     <div>
-        <v-toolbar>
-            <v-container>
-                <v-layout>
-
-                   
-                </v-layout>
-            </v-container>
-        </v-toolbar>
-
-        <v-dialog v-model="dialog" max-width="50%" persistent>
+        <v-dialog v-model="Lkws_data.dialog" max-width="50%" persistent>
             <v-card>
                 <v-card-title>
                 <span class="headline">LKW bearbeiten</span>
@@ -19,17 +10,17 @@
                     <v-container grid-list-md>
                         <v-layout wrap>
                             <v-flex xs12 sm6 md4>
-                                <v-text-field v-model="editedItem.lkw" label="Kennzeichen"></v-text-field>
+                                <v-text-field v-model="Lkws_data.editedItem.lkw" label="Kennzeichen"></v-text-field>
                             </v-flex>
                             <v-flex xs12 sm6 md4>
-                                <v-text-field v-model="editedItem.spedition" label="Spedition"></v-text-field>
+                                <v-text-field v-model="Lkws_data.editedItem.spedition" label="Spedition"></v-text-field>
                             </v-flex>
                             <v-flex xs12 sm6 md4>
-                                <v-text-field v-model="editedItem.frachtkosten" prepend-icon="euro_symbol" type="number" label="Frachtkosten"></v-text-field>
+                                <v-text-field v-model="Lkws_data.editedItem.frachtkosten" prepend-icon="euro_symbol" type="number" label="Frachtkosten"></v-text-field>
                             </v-flex>
                             <v-flex xs12 sm6 md12>
                                 <v-textarea
-                                    v-model="editedItem.kommentar"
+                                    v-model="Lkws_data.editedItem.kommentar"
                                     label="Kommentar"
                                     counter
                                     maxlength="191"
@@ -40,7 +31,7 @@
                 </v-card-text>
 
                 <v-card-actions>
-                    <v-btn color="red darken-1" flat @click="del(editedItem)">löschen</v-btn>
+                    <v-btn color="red darken-1" flat @click="del(Lkws_data.editedItem)">löschen</v-btn>
                     <v-spacer></v-spacer>
                     <v-btn color="blue darken-1" flat @click="close">abbrechen</v-btn>
                     <v-btn color="blue darken-1" flat @click="save">speichern</v-btn>
@@ -48,8 +39,7 @@
             </v-card>
         </v-dialog>
 
-
-        <div v-bind:key="item.id" v-for="item in this.lkws" :style="{backgroundColor: colors(item.ankunft)}" @click="editLkws(item)" style="cursor: pointer">
+        <div v-for="item in this.Lkws_data" v-bind:key="item.id" :style="{backgroundColor: colors(item.ankunft)}" @click="editLkws(item)" style="cursor: pointer">
             <div class="head">
                 <div>
                     <strong v-show="item.lkw != undefined && item.lkw != ''">LKW:</strong> {{item.lkw}} <strong v-show="item.spedition != undefined && item.spedition != ''">Spedition:</strong> {{item.spedition}} <strong v-show="item.frachtkosten != undefined && item.spedition != ''">Frachtkosten:</strong> <span v-show="item.frachtkosten != undefined && item.frachtkosten !=''"> {{item.frachtkosten}} €</span>
@@ -59,11 +49,11 @@
             <v-card>
                 <template>
                     <v-data-table
-                        :headers="headers"
+                        :headers="Lkws_data.headers"
                         :items="item.wes"
                         class="elevation-1 mytable"
                         hide-actions
-                        :search="search"
+                        :search="Lkws_data.search"
                     >
                         <template v-slot:items="props">
                             <tr :style="{backgroundColor: colors(props.item.ankunft) }">
@@ -84,20 +74,15 @@
                 </template>
             </v-card>
         </div>
-        <v-pagination
-            style="margin-top: 19px"
-            v-model="pagination.current"
-            :length="pagination.total"
-            @input="onPageChange"
-        ></v-pagination>
+
         <v-snackbar
-            v-model="snackbar"
-            :color="snack_color"
-            :multi-line="mode === 'multi-line'"
-            :timeout="timeout"
-            :vertical="mode === 'vertical'"
+            v-model="Lkws_data.snackbar"
+            :color="Lkws_data.snack_color"
+            :multi-line="Lkws_data.mode === 'multi-line'"
+            :timeout="Lkws_data.timeout"
+            :vertical="Lkws_data.mode === 'vertical'"
             >
-            {{ snack_text }}
+            {{ Lkws_data.snack_text }}
             <v-btn
                 dark
                 flat
@@ -111,36 +96,12 @@
 
 <script>
 import axios from 'axios';
+import {globalStore} from '../main.js'
+
 export default {
     data() {
         return {
-            headers: [
-                {text: "Produkt", value: "produkt.name", width: "21%", fixed: true, sortable: false, align: 'left'},
-                {text: "Gebinde", value: "gebinde.name", width: "10%", fixed: true, sortable: false, align: 'left'},
-                {text: "Paletten", value: "paletten", width: "5%", fixed: true, sortable: false, align: 'left'},
-                {text: "Menge", value: "menge", width: "3%", fixed: true, sortable: false, align: 'left'},
-                {text: "Lieferant", value: "lieferant.name", width: "14%", fixed: true, sortable: false, align: 'left'},
-                {text: "Preis", value: "preis", width: "3%", fixed: true, sortable: false, align: 'left'},
-                {text: "Entladung", value: "entladung.name", width: "10%", fixed: true, sortable: false, align: 'left'},
-                {text: "Verladung", value: "verladung", width: "10%", fixed: true, sortable: false, align: 'left'},
-                {text: "Ankunft", value: "ankunft", width: "10%", fixed: true, sortable: false, align: 'left'},
-                {text: "WE", value: "we_nr", width: "7%", fixed: true, sortable: false, align: 'left'},
-                {text: "LS", value: "ls_nr", width: "7%", fixed: true, sortable: false, align: 'left'}                
-            ],
-            search: null,
-            lkws: null,
-            pagination: {
-                current: 1,
-                total: 0
-            },
-            snackbar: false,
-            snack_text: '',
-            snack_color: '',
-            mode: 'multi-line',
-            timeout: 2000,
-            dialog: false,
-            editedItem: {},
-            defaultItem: {}
+
         }
     },
     methods: {
@@ -150,84 +111,70 @@ export default {
             .then(
                 resp => {
                     if (resp.status === 200){
-                        this.snack_text = 'LKW gelöscht',
-                        this.snack_color = 'success',
-                        this.snackbar = true,
+                        this.Lkws_data.snack_text = 'LKW gelöscht',
+                        this.Lkws_data.snack_color = 'success',
+                        this.Lkws_data.snackbar = true,
                         this.getLkws()
                     } 
                 }
             )
             .catch(
                 err => (
-                    this.snack_text = 'Da hat etwas nicht funktioniert :( delete' + err,
-                    this.snack_color = 'error',
-                    this.snackbar = true)
+                    this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( delete' + err,
+                    this.Lkws_data.snack_color = 'error',
+                    this.Lkws_data.snackbar = true)
                 )
             
             this.close()
             }
         },
-        getLkws() {
-            axios.get(this.api_link + 'lkw?page=' + this.pagination.current)
-                .then(response => {
-                    this.lkws = response.data.data;
-                    this.pagination.current = response.data.meta.current_page;
-                    this.pagination.total = response.data.meta.last_page;
-                })                    
-                .catch(
-                    err => {
-                        this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                        this.snack_color = 'error',
-                        this.snackbar = true}
-                    );
-        },
         editLkws (item) {
-            this.editedIndex = this.lkws.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialog = true
+            this.Lkws_data.editedIndex = this.Lkws_data.lkws.indexOf(item)
+            this.Lkws_data.editedItem = Object.assign({}, item)
+            this.Lkws_data.dialog = true
         },
         onPageChange() {
             this.getLkws();
         },
         close() {
-            this.dialog = false
+            this.Lkws_data.dialog = false
             setTimeout(() => {
-            this.editedItem = Object.assign({}, this.defaultItem)
-            this.editedIndex = -1
+            this.Lkws_data.editedItem = Object.assign({}, this.Lkws_data.defaultItem)
+            this.Lkws_data.editedIndex = -1
             }, 300)
         },
         save() {
             axios.put(this.api_link + 'lkw',{
-                id: this.editedItem.id,
-                lkw: this.editedItem.lkw,
-                spedition: this.editedItem.spedition,
-                frachtkosten: this.editedItem.frachtkosten,
-                kommentar: this.editedItem.kommentar
+                id: this.Lkws_data.editedItem.id,
+                lkw: this.Lkws_data.editedItem.lkw,
+                spedition: this.Lkws_data.editedItem.spedition,
+                frachtkosten: this.Lkws_data.editedItem.frachtkosten,
+                kommentar: this.Lkws_data.editedItem.kommentar
             })
             .then(
                 resp => {
                     if (resp.status === 200){
-                        this.snack_text = 'LKW erfolgreich geändert',
-                        this.snack_color = 'success',
-                        this.snackbar = true
+                        this.Lkws_data.snack_text = 'LKW erfolgreich geändert',
+                        this.Lkws_data.snack_color = 'success',
+                        this.Lkws_data.snackbar = true
                     } 
                     }
                 )
             .catch(
                 err => {
-                    this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                    this.snack_color = 'error',
-                    this.snackbar = true}
+                    this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    this.Lkws_data.snack_color = 'error',
+                    this.Lkws_data.snackbar = true}
                 );
 
-            Object.assign(this.lkws[this.editedIndex], this.editedItem)
+            Object.assign(this.Lkws_data.lkws[this.Lkws_data.editedIndex], this.Lkws_data.editedItem)
             this.close()
         } 
     },
     created() {
-        this.getLkws();
+        this.getLkws()
     },
-    props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link']
+    props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link','getLkws','Lkws_data']
 }
 </script>
 

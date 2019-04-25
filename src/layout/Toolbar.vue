@@ -7,10 +7,12 @@
             <v-btn flat to="/Verteilung">Verteilung</v-btn>
             <v-flex xs12 sm3>
                 <v-select
+                v-model="kw_select"
+                hight="20px"
+                class="styled-input"
                 :items="Kalenderwoche"
-                label="KW"
-                solo
                 prefix="KW"
+                @change="getKW()"
                 ></v-select>
             </v-flex>
         </v-toolbar-items>
@@ -47,14 +49,21 @@
 
 <script>
 import axios from 'axios';
+import {globalStore} from '../main.js'
 
 export default {
     data() {
         return {
-            Kalenderwoche: []
+            Kalenderwoche: [],
+            kw_select: 0
         }
     },
     methods: {
+        getKW() {
+            globalStore.kw = this.kw_select,
+            this.getWes(),
+            this.getLkws()
+		},
         get_kws() {
             axios.get(this.api_link + 'kw')
             .then(response => {
@@ -69,8 +78,25 @@ export default {
         }
     },
     created() {
-        this.get_kws()
+        this.get_kws();
     },
-    props: ['api_link']
+    props: ['api_link','Wareneingang_data','getWes','getLkws']
 }
 </script>
+
+<style scoped>
+#styled-input {
+  height: 40px;
+  font-size: 20pt;
+}
+.styled-input label[for] {
+  height: 40px;
+  font-size: 20pt;
+}
+.v-text-field--box .v-input__slot,
+.v-text-field--outline .v-input__slot {
+  min-height: auto!important;
+  display: flex!important;
+  align-items: center!important;
+}
+</style>

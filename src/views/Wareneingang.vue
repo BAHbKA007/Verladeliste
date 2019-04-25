@@ -2,8 +2,8 @@
   <div>
     <v-toolbar flat>
         <v-text-field
-            v-model="search"
-            :search-input.sync="search"
+            v-model="Wareneingang_data.search"
+            :search-input.sync="Wareneingang_data.search"
             prepend-icon="search"
             label="Wareneingang suchen"
             single-line
@@ -17,25 +17,25 @@
       ></v-divider>
       <v-spacer></v-spacer>
 
-        <v-form ref="form" v-model="valid" lazy-validation>
-            <v-dialog v-model="dialog" max-width="60%" persistent>
+        <v-form ref="form" v-model="Wareneingang_data.valid" lazy-validation>
+            <v-dialog v-model="Wareneingang_data.dialog" max-width="60%" persistent>
                 <template v-slot:activator="{ on }">
                     <v-btn color="primary" dark class="mb-2" v-on="on" @click="search_api();set_title()">Neuen Wareneingang anlegen</v-btn>
                 </template>
                 <v-card>
                 <v-card-title>
-                    <span class="headline">{{ formTitle }}</span>
+                    <span class="headline">{{ Wareneingang_data.formTitle }}</span>
                 </v-card-title>
                 <v-card-text>
                     <v-container grid-list-md>
                     <v-layout wrap>
                         <v-flex xs12 sm6 md4>
                             <v-autocomplete
-                                v-model="editedItem.produkt"
+                                v-model="Wareneingang_data.editedItem.produkt"
                                 required 
-                                :rules="rules"
+                                :rules="Wareneingang_data.rules"
                                 :label="'Produkt'"
-                                :items="items_artikel"
+                                :items="Wareneingang_data.items_artikel"
                                 item-text="name"
                                 hide-no-data
                                 return-object
@@ -49,11 +49,11 @@
                         </v-flex>
                         <v-flex xs12 sm6 md4>
                             <v-autocomplete
-                                v-model="editedItem.gebinde"
+                                v-model="Wareneingang_data.editedItem.gebinde"
                                 required 
-                                :rules="rules"
+                                :rules="Wareneingang_data.rules"
                                 :label="'Gebinde'"
-                                :items="items_gebinde"
+                                :items="Wareneingang_data.items_gebinde"
                                 item-text="name"
                                 hide-no-data
                                 return-object
@@ -66,16 +66,16 @@
                             </v-autocomplete>
                         </v-flex>
                         <v-flex xs12 sm6 md4>
-                            <v-text-field v-model="editedItem.menge" label="Menge" type="number" min="0" step="0.01"></v-text-field>
+                            <v-text-field v-model="Wareneingang_data.editedItem.menge" label="Menge" type="number" min="0" step="0.01"></v-text-field>
                         </v-flex>
 
                         <v-flex xs12 sm6 md4>
                             <v-autocomplete
-                                v-model="editedItem.lieferant"
+                                v-model="Wareneingang_data.editedItem.lieferant"
                                 required 
-                                :rules="rules"
+                                :rules="Wareneingang_data.rules"
                                 :label="'Lieferant'"
-                                :items="items_lieferant"
+                                :items="Wareneingang_data.items_lieferant"
                                 item-text="name"
                                 item-value="id"
                                 hide-no-data
@@ -89,16 +89,16 @@
                             </v-autocomplete>
                         </v-flex>
                         <v-flex xs12 sm6 md4>
-                            <v-text-field v-model="editedItem.paletten" label="Paletten" type="number" min="0" step="0.01"></v-text-field>
+                            <v-text-field v-model="Wareneingang_data.editedItem.paletten" label="Paletten" type="number" min="0" step="0.01"></v-text-field>
                         </v-flex>
                         <v-flex xs12 sm6 md4>
-                            <v-text-field v-model="editedItem.preis" label="Preis" type="number" prepend-icon="euro_symbol"></v-text-field>
+                            <v-text-field v-model="Wareneingang_data.editedItem.preis" label="Preis" type="number" prepend-icon="euro_symbol"></v-text-field>
                         </v-flex>
 
                         <!-- Verladedatum -->
                         <v-flex xs12 sm6 md4>
                             <v-menu
-                                v-model="menu1"
+                                v-model="Wareneingang_data.menu1"
                                 :close-on-content-click="false"
                                 lazy
                                 transition="scale-transition"
@@ -108,18 +108,18 @@
                             >
                                 <template v-slot:activator="{ on }">
                                 <v-text-field
-                                    v-model="editedItem.verladung"
+                                    v-model="Wareneingang_data.editedItem.verladung"
                                     label="Verladedatum"
                                     prepend-icon="event"
                                     readonly
                                     v-on="on"
-                                    :rules="rules"
+                                    :rules="Wareneingang_data.rules"
                                 ></v-text-field>
                                 </template>
                                 <v-date-picker 
                                     no-title scrollable 
-                                    v-model="editedItem.verladung" 
-                                    @input="menu1 = false"
+                                    v-model="Wareneingang_data.editedItem.verladung" 
+                                    @input="Wareneingang_data.menu1 = false"
                                     :first-day-of-week="1"
                                     locale="de"
                                 ></v-date-picker>
@@ -129,7 +129,7 @@
                         <!-- Entladedatum -->
                         <v-flex xs12 sm6 md4>    
                             <v-menu
-                                v-model="menu2"
+                                v-model="Wareneingang_data.menu2"
                                 :close-on-content-click="false"
                                 lazy
                                 transition="scale-transition"
@@ -139,18 +139,18 @@
                             >
                                 <template v-slot:activator="{ on }">
                                 <v-text-field
-                                    v-model="editedItem.ankunft"
+                                    v-model="Wareneingang_data.editedItem.ankunft"
                                     label="Entladedatum"
                                     prepend-icon="event"
                                     readonly
                                     v-on="on"
-                                    :rules="rules"
+                                    :rules="Wareneingang_data.rules"
                                 ></v-text-field>
                                 </template>
                                 <v-date-picker 
                                     no-title scrollable 
-                                    v-model="editedItem.ankunft" 
-                                    @input="menu2 = false"
+                                    v-model="Wareneingang_data.editedItem.ankunft" 
+                                    @input="Wareneingang_data.menu2 = false"
                                     :first-day-of-week="1"
                                     locale="de"
                                 ></v-date-picker>
@@ -159,11 +159,11 @@
 
                         <v-flex xs12 sm6 md4>
                             <v-autocomplete
-                                v-model="editedItem.entladung"
+                                v-model="Wareneingang_data.editedItem.entladung"
                                 required 
-                                :rules="rules"
+                                :rules="Wareneingang_data.rules"
                                 :label="'Entladung'"
-                                :items="items_entladung"
+                                :items="Wareneingang_data.items_entladung"
                                 item-text="name"
                                 hide-no-data
                                 return-object
@@ -177,10 +177,10 @@
                         </v-flex>
 
                         <v-flex xs12 sm6 md6>
-                            <v-text-field v-model="editedItem.we_nr" label="WE-Nummer"></v-text-field>
+                            <v-text-field v-model="Wareneingang_data.editedItem.we_nr" label="WE-Nummer"></v-text-field>
                         </v-flex>
                             <v-flex xs12 sm6 md6>
-                        <v-text-field v-model="editedItem.ls_nr" label="LS-Nummer"></v-text-field>
+                        <v-text-field v-model="Wareneingang_data.editedItem.ls_nr" label="LS-Nummer"></v-text-field>
                         </v-flex>
 
                     </v-layout>
@@ -193,7 +193,7 @@
                     <v-btn color="blue darken-1" flat @click="save">speichern</v-btn>
                 </v-card-actions>
                 <template>
-                    <v-progress-linear height="2" style="margin-bottom:0" :indeterminate="isLoading"></v-progress-linear>
+                    <v-progress-linear height="2" style="margin-bottom:0" :indeterminate="Wareneingang_data.isLoading"></v-progress-linear>
                 </template>
                 </v-card>
             </v-dialog>
@@ -203,12 +203,10 @@
     
     <v-data-table
    
-        :headers="headers"
-        :items="Wareneingang"
+        :headers="Wareneingang_data.headers"
+        :items="Wareneingang_data.Wareneingang"
         class="elevation-1"
-        :search="search"
-        :loading="loading"
-        :pagination.sync="pagination"
+        :search="Wareneingang_data.search"
         hide-actions
     >
     <template v-slot:items="props">
@@ -249,24 +247,18 @@
         </tr>
     </template>
     </v-data-table>
-    <v-pagination
-        style="margin-top: 19px"
-        v-model="pagination.current"
-        :length="pagination.total"
-        @input="onPageChange"
-    ></v-pagination>
     <v-snackbar
-      v-model="snackbar"
-      :color="snack_color"
-      :multi-line="mode === 'multi-line'"
-      :timeout="timeout"
-      :vertical="mode === 'vertical'"
+      v-model="Wareneingang_data.snackbar"
+      :color="Wareneingang_data.snack_color"
+      :multi-line="Wareneingang_data.mode === 'multi-line'"
+      :timeout="Wareneingang_data.timeout"
+      :vertical="Wareneingang_data.mode === 'vertical'"
     >
-      {{ snack_text }}
+      {{ Wareneingang_data.snack_text }}
       <v-btn
         dark
         flat
-        @click="snackbar = false"
+        @click="Wareneingang_data.snackbar = false"
       >
         Schließen
       </v-btn>
@@ -276,234 +268,170 @@
 
 <script>
 import axios from 'axios';
+import {globalStore} from '../main.js'
 
+export default {
+watch: {
+    dialog (val) {
+        val || this.close()
+    }
+},
 
-  export default {
-    data: () => ({
-        formTitle: String,
-        pagination: {
-                sortBy: 'ankunft',
-                descending: true,
-                rowsPerPage: -1
-            },
-        isLoading: true,
-        items_lieferant: [],
-        items_artikel: [],
-        items_gebinde: [],
-        items_entladung: [],
-        search: null,
-        valid: false,
-        on: false,
-        date: new Date().toISOString().substr(0, 10),
-        menu1: false,
-        menu2: false,
-        loading: false,
-        dialog: false,
-        headers: [
-            { text: 'Produkt', value: 'produkt.name', sortable: true, align: 'left'},
-            { text: 'Gebinde', value: 'gebinde.name', sortable: true, align: 'left'},
-            { text: 'Paletten', value: 'paletten', sortable: true, align: 'left'},
-            { text: 'Menge', value: 'menge', sortable: true, align: 'left'},
-            { text: 'Lieferant', value: 'lieferant.name', sortable: true, align: 'left'},
-            { text: 'Preis', value: 'preis', sortable: true, align: 'right'},
-            { text: 'Entladung', value: 'entladung.name', sortable: true, align: 'left'},
-            { text: 'Verladedatum', value: 'verladung', sortable: true, align: 'left'},
-            { text: 'Ankunftsdatum', value: 'ankunft', sortable: true, align: 'left'},
-            { text: 'WE', value: 'we_nr', sortable: true, align: 'left'},
-            { text: 'LS', value: 'ls_nr', sortable: true, align: 'left' },
-            { text: 'Aktionen', value: '', sortable: false, align: 'center' }
-        ],
-        Wareneingang: [],
-        editedIndex: -1,
-        editedItem: {},
-        defaultItem: {},
-        snackbar: false,
-        snack_text: '',
-        snack_color: '',
-        mode: 'multi-line',
-        timeout: 2000,
-        rules: [
-           v => !!v || 'Feld darf nicht leer sein'
-        ]
-    }),
+created () {
+    this.getWes()
+},
 
-    watch: {
-        dialog (val) {
-            val || this.close()
+methods: {
+    console(){
+        console.log(this.Wareneingang_data)
+    },
+    set_title() {
+        this.Wareneingang_data.formTitle = 'Neuen WE anlegen'
+    },
+
+    search_api () {
+        // Items have already been loaded
+        if (this.Wareneingang_data.items_artikel.length > 0 && this.Wareneingang_data.items_lieferant.length > 0 && this.Wareneingang_data.items_gebinde.length > 0 && this.Wareneingang_data.items_entladung.length > 0) return
+
+        axios.get(this.api_link+'artikel')
+        .then(res => this.Wareneingang_data.items_artikel = res.data)
+        .catch(err => console.log(err)); /* eslint-disable-line no-console */
+
+        axios.get(this.api_link+'lieferant')
+        .then(res => this.Wareneingang_data.items_lieferant = res.data)
+        .catch(err => console.log(err)); /* eslint-disable-line no-console */
+
+        axios.get(this.api_link+'gebinde')
+        .then(res => this.Wareneingang_data.items_gebinde = res.data)
+        .catch(err => console.log(err)); /* eslint-disable-line no-console */
+
+        axios.get(this.api_link+'entladung')
+        .then(res => this.Wareneingang_data.items_entladung = res.data)
+        .catch(err => console.log(err)) /* eslint-disable-line no-console */
+    },    
+
+    check_var_undifined (vari) {
+        if (vari) {
+            vari = vari.replace(',','.')
         }
+        return vari
+    },
+    editItem (item) {
+        this.Wareneingang_data.formTitle = 'Wareneingang bearbeiten'
+        this.search_api()
+        this.Wareneingang_data.editedIndex = this.Wareneingang_data.Wareneingang.indexOf(item)
+        this.Wareneingang_data.editedItem = Object.assign({}, item)
+        this.Wareneingang_data.dialog = true
     },
 
-    created () {
-      this.getWes()
+    copyItem (item) {
+        this.Wareneingang_data.formTitle = 'Kopie erstellen'
+        this.search_api()
+        this.Wareneingang_data.editedIndex = this.Wareneingang_data.Wareneingang.indexOf(item)
+        this.Wareneingang_data.editedItem = Object.assign({}, item)
+        this.Wareneingang_data.dialog = true
     },
 
-    methods: {
-         onPageChange() {
-            this.getWes();
-        },
-        getWes() {
-            axios.get(this.api_link + 'we?page=' + this.pagination.current)
-                .then(response => {
-                    this.Wareneingang = response.data.data;
-                    this.pagination.current = response.data.meta.current_page;
-                    this.pagination.total = response.data.meta.last_page;
-                })                    
-                .catch(
-                    err => {
-                        this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                        this.snack_color = 'error',
-                        this.snackbar = true}
-                );
-        },
-        set_title() {
-            this.formTitle = 'Neuen WE anlegen'
-        },
+    deleteItem (item) {
+        const index = this.Wareneingang_data.Wareneingang.indexOf(item)
+        confirm('Wareneingang löschen?') && this.Wareneingang_data.Wareneingang.splice(index, 1)
+        axios.delete(this.api_link+'we/'+item.id)
+        .then()
+        .catch(
+            err => (
+                this.Wareneingang_data.snack_text = 'Da hat etwas nicht funktioniert :( delete' + err,
+                this.Wareneingang_data.snack_color = 'error',
+                this.Wareneingang_data.snackbar = true)
+            ); /* eslint-disable-line no-console */
+    },
 
-        search_api () {
-            // Items have already been loaded
-            if (this.items_artikel.length > 0 && this.items_lieferant.length > 0 && this.items_gebinde.length > 0 && this.items_entladung.length > 0) return
-            this.isLoading = true
+    close () {
+        this.Wareneingang_data.dialog = false
+        setTimeout(() => {
+        this.Wareneingang_data.editedItem = Object.assign({}, this.Wareneingang_data.defaultItem)
+        this.Wareneingang_data.editedIndex = -1
+        }, 300)
+    },
 
-            axios.get(this.api_link+'artikel')
-            .then(res => this.items_artikel = res.data)
-            .catch(err => console.log(err)); /* eslint-disable-line no-console */
+    save () {
+        if (this.$refs.form.validate()) {
+                                    
+            if (this.Wareneingang_data.editedIndex > -1 && this.Wareneingang_data.formTitle != 'Kopie erstellen') {
 
-            axios.get(this.api_link+'lieferant')
-            .then(res => this.items_lieferant = res.data)
-            .catch(err => console.log(err)); /* eslint-disable-line no-console */
+                // Bearbeiten
 
-            axios.get(this.api_link+'gebinde')
-            .then(res => this.items_gebinde = res.data)
-            .catch(err => console.log(err)); /* eslint-disable-line no-console */
-
-            axios.get(this.api_link+'entladung')
-            .then(res => this.items_entladung = res.data)
-            .catch(err => console.log(err)) /* eslint-disable-line no-console */
-            .finally(() => (this.isLoading = false))
-        },    
-
-        check_var_undifined (vari) {
-            if (vari) {
-                vari = vari.replace(',','.')
-            }
-            return vari
-        },
-        editItem (item) {
-            this.formTitle = 'Wareneingang bearbeiten'
-            this.search_api()
-            this.editedIndex = this.Wareneingang.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialog = true
-        },
-
-        copyItem (item) {
-            this.formTitle = 'Kopie erstellen'
-            this.search_api()
-            this.editedIndex = this.Wareneingang.indexOf(item)
-            this.editedItem = Object.assign({}, item)
-            this.dialog = true
-        },
-
-        deleteItem (item) {
-            const index = this.Wareneingang.indexOf(item)
-            confirm('Wareneingang löschen?') && this.Wareneingang.splice(index, 1)
-            axios.delete(this.api_link+'we/'+item.id)
-            .then()
-            .catch(
-                err => (
-                    this.snack_text = 'Da hat etwas nicht funktioniert :( delete' + err,
-                    this.snack_color = 'error',
-                    this.snackbar = true)
-                ); /* eslint-disable-line no-console */
-        },
-
-        close () {
-            this.dialog = false
-            setTimeout(() => {
-            this.editedItem = Object.assign({}, this.defaultItem)
-            this.editedIndex = -1
-            }, 300)
-        },
-
-        save () {
-            if (this.$refs.form.validate()) {
-                                        
-                if (this.editedIndex > -1 && this.formTitle != 'Kopie erstellen') {
-
-                    // Bearbeiten
-
-                    axios.put(this.api_link + 'we',{
-                        id: this.editedItem.id,
-                        produkt: this.editedItem.produkt.id,
-                        gebinde: this.editedItem.gebinde.id,
-                        menge: this.editedItem.menge,
-                        lieferant: this.editedItem.lieferant.id,
-                        paletten: this.check_var_undifined(this.editedItem.paletten),
-                        preis: this.check_var_undifined(this.editedItem.preis),
-                        verladung: this.editedItem.verladung,
-                        ankunft: this.editedItem.ankunft,
-                        entladung: this.editedItem.entladung.id,
-                        we_nr: this.editedItem.we_nr,
-                        ls_nr: this.editedItem.ls_nr
-                    })
-                    .then(
-                        resp => {
-                            if (resp.status === 200){
-                                this.snack_text = 'Wareneingang erfolgreich geändert',
-                                this.snack_color = 'success',
-                                this.snackbar = true,
-                                this.getWes()
-                            }
-                            }
-                        )
-                    .catch(
-                        err => {
-                            this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                            this.snack_color = 'error',
-                            this.snackbar = true}
-                        );
-
-                    Object.assign(this.Wareneingang[this.editedIndex], this.editedItem)
-                } else {
-
-                // Neuer Wareneingang
-
-                axios.post(this.api_link + 'we',{
-                        id: this.editedItem.id,
-                        produkt: this.editedItem.produkt.id,
-                        gebinde: this.editedItem.gebinde.id,
-                        menge: this.editedItem.menge,
-                        lieferant: this.editedItem.lieferant.id,
-                        paletten: this.check_var_undifined(this.editedItem.paletten),
-                        preis: this.check_var_undifined(this.editedItem.preis),
-                        verladung: this.editedItem.verladung,
-                        ankunft: this.editedItem.ankunft,
-                        entladung: this.editedItem.entladung.id,
-                        we_nr: this.editedItem.we_nr,
-                        ls_nr: this.editedItem.ls_nr
+                axios.put(this.api_link + 'we',{
+                    id: this.Wareneingang_data.editedItem.id,
+                    produkt: this.Wareneingang_data.editedItem.produkt.id,
+                    gebinde: this.Wareneingang_data.editedItem.gebinde.id,
+                    menge: this.Wareneingang_data.editedItem.menge,
+                    lieferant: this.Wareneingang_data.editedItem.lieferant.id,
+                    paletten: this.check_var_undifined(this.Wareneingang_data.editedItem.paletten),
+                    preis: this.check_var_undifined(this.Wareneingang_data.editedItem.preis),
+                    verladung: this.Wareneingang_data.editedItem.verladung,
+                    ankunft: this.Wareneingang_data.editedItem.ankunft,
+                    entladung: this.Wareneingang_data.editedItem.entladung.id,
+                    we_nr: this.Wareneingang_data.editedItem.we_nr,
+                    ls_nr: this.Wareneingang_data.editedItem.ls_nr
                 })
                 .then(
                     resp => {
-                        if (resp.status === 201){
-                            this.snack_text = 'Wareneingang erfolgreich hinzugefügt',
-                            this.snack_color = 'success',
-                            this.snackbar = true,
+                        if (resp.status === 200){
+                            this.Wareneingang_data.snack_text = 'Wareneingang erfolgreich geändert',
+                            this.Wareneingang_data.snack_color = 'success',
+                            this.Wareneingang_data.snackbar = true,
                             this.getWes()
-                        } 
+                        }
                         }
                     )
                 .catch(
-                    err => (
-                        this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                        this.snack_color = 'error',
-                        this.snackbar = true)
+                    err => {
+                        this.Wareneingang_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                        this.Wareneingang_data.snack_color = 'error',
+                        this.Wareneingang_data.snackbar = true}
                     );
-                }
-                this.close()
+
+                Object.assign(this.Wareneingang_data.Wareneingang[this.Wareneingang_data.editedIndex], this.Wareneingang_data.editedItem)
+            } else {
+
+            // Neuer Wareneingang
+
+            axios.post(this.api_link + 'we',{
+                    id: this.Wareneingang_data.editedItem.id,
+                    produkt: this.Wareneingang_data.editedItem.produkt.id,
+                    gebinde: this.Wareneingang_data.editedItem.gebinde.id,
+                    menge: this.Wareneingang_data.editedItem.menge,
+                    lieferant: this.Wareneingang_data.editedItem.lieferant.id,
+                    paletten: this.check_var_undifined(this.Wareneingang_data.editedItem.paletten),
+                    preis: this.check_var_undifined(this.Wareneingang_data.editedItem.preis),
+                    verladung: this.Wareneingang_data.editedItem.verladung,
+                    ankunft: this.Wareneingang_data.editedItem.ankunft,
+                    entladung: this.Wareneingang_data.editedItem.entladung.id,
+                    we_nr: this.Wareneingang_data.editedItem.we_nr,
+                    ls_nr: this.Wareneingang_data.editedItem.ls_nr
+            })
+            .then(
+                resp => {
+                    if (resp.status === 201){
+                        this.Wareneingang_data.snack_text = 'Wareneingang erfolgreich hinzugefügt',
+                        this.Wareneingang_data.snack_color = 'success',
+                        this.Wareneingang_data.snackbar = true,
+                        this.getWes()
+                    } 
+                    }
+                )
+            .catch(
+                err => (
+                    this.Wareneingang_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    this.Wareneingang_data.snack_color = 'error',
+                    this.Wareneingang_data.snackbar = true)
+                );
             }
+            this.close()
         }
-    },
-    props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link']
+    }
+},
+props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link','Wareneingang_data','getWes']
 }
 </script>
 

@@ -10,6 +10,16 @@ import CountryFlag from 'vue-country-flag'
 import 'material-design-icons/iconfont/material-icons.css'
 import 'typeface-roboto/index.css'
 
+Vue.prototype.$globals = globalStore
+export var globalStore = new Vue({
+  data: {
+    kw: 1
+  }
+})
+Vue.prototype.$globals = globalStore
+
+export const EventBus = new Vue();
+
 
 Vue.component('vue-country-flag', CountryFlag)
 Vue.use(Vuetify, {
