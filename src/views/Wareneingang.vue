@@ -1,9 +1,8 @@
 <template>
   <div>
     <v-toolbar flat>
-        <v-text-field
+        <v-text-field 
             v-model="Wareneingang_data.search"
-            :search-input.sync="Wareneingang_data.search"
             prepend-icon="search"
             label="Wareneingang suchen"
             single-line
@@ -20,7 +19,7 @@
         <v-form ref="form" v-model="Wareneingang_data.valid" lazy-validation>
             <v-dialog v-model="Wareneingang_data.dialog" max-width="60%" persistent>
                 <template v-slot:activator="{ on }">
-                    <v-btn color="primary" dark class="mb-2" v-on="on" @click="search_api();set_title()">Neuen Wareneingang anlegen</v-btn>
+                    <v-btn color="primary" dark class="mb-2" v-on="on" @click="search_api(),set_title()">Neuen Wareneingang anlegen</v-btn>
                 </template>
                 <v-card>
                 <v-card-title>
@@ -206,7 +205,7 @@
         :headers="Wareneingang_data.headers"
         :items="Wareneingang_data.Wareneingang"
         class="elevation-1"
-        :search="Wareneingang_data.search"
+        :search="searchTrigger"
         hide-actions
         v-bind:pagination.sync="Wareneingang_data.pagination"
     >
@@ -284,7 +283,7 @@ created () {
 
 methods: {
     console(){
-        console.log(this.Wareneingang_data)
+        console.log('keclickt')
     },
     set_title() {
         this.Wareneingang_data.formTitle = 'Neuen WE anlegen'
@@ -292,7 +291,7 @@ methods: {
 
     search_api () {
         // Items have already been loaded
-        if (this.Wareneingang_data.items_artikel.length > 0 && this.Wareneingang_data.items_lieferant.length > 0 && this.Wareneingang_data.items_gebinde.length > 0 && this.Wareneingang_data.items_entladung.length > 0) return
+        // if (this.Wareneingang_data.items_artikel.length > 0 && this.Wareneingang_data.items_lieferant.length > 0 && this.Wareneingang_data.items_gebinde.length > 0 && this.Wareneingang_data.items_entladung.length > 0) {return}
 
         axios.get(this.api_link+'artikel')
         .then(res => this.Wareneingang_data.items_artikel = res.data)
@@ -355,6 +354,7 @@ methods: {
     },
 
     save () {
+        this.get_kws()
         if (this.$refs.form.validate()) {
                                     
             if (this.Wareneingang_data.editedIndex > -1 && this.Wareneingang_data.formTitle != 'Kopie erstellen') {
@@ -432,7 +432,17 @@ methods: {
         }
     }
 },
-props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link','Wareneingang_data','getWes']
+
+computed: {
+    searchTrigger () {
+        if (this.Wareneingang_data.search != null && this.Wareneingang_data.search.length >= 3) {
+            return this.Wareneingang_data.search
+        }
+        return
+    }
+},
+
+props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link','Wareneingang_data','getWes','get_kws']
 }
 </script>
 

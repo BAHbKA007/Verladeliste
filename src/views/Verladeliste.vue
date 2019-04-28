@@ -42,7 +42,11 @@
         <div v-for="item in this.Lkws_data.lkws" v-bind:key="item.id" :style="{backgroundColor: colors(item.ankunft)}" @click="editLkws(item)" style="cursor: pointer">
             <div class="head">
                 <div>
-                    <strong v-show="item.lkw != undefined && item.lkw != ''">LKW:</strong> {{item.lkw}} <strong v-show="item.spedition != undefined && item.spedition != ''">Spedition:</strong> {{item.spedition}} <strong v-show="item.frachtkosten != undefined && item.spedition != ''">Frachtkosten:</strong> <span v-show="item.frachtkosten != undefined && item.frachtkosten !=''"> {{item.frachtkosten}} €</span>
+                    <strong v-show="item.lkw != undefined && item.lkw != ''">LKW:</strong> {{item.lkw}} 
+                    <strong v-show="item.spedition != undefined && item.spedition != ''">Spedition:</strong> {{item.spedition}} 
+                    <strong v-show="item.frachtkosten != undefined && item.spedition != ''">Frachtkosten:</strong> 
+                    <span v-show="item.frachtkosten != undefined && item.frachtkosten !=''"> {{item.frachtkosten}} € 
+                        ( <span v-for="traeger in item.kosten" v-bind:key="traeger.traeger"> {{traeger.traeger}}: {{ (Math.round(traeger.summe * 100)/100).toFixed(2) }}€ / </span> ) </span>
                     <div v-show="item.kommentar != undefined"> <span style="font-style: italic; font-size: 12px">{{item.kommentar}}</span></div>
                 </div>
             </div>
@@ -169,7 +173,7 @@ export default {
 
             Object.assign(this.Lkws_data.lkws[this.Lkws_data.editedIndex], this.Lkws_data.editedItem)
             this.close()
-        } 
+        }
     },
     created() {
         this.getLkws()

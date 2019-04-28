@@ -135,8 +135,8 @@ export default {
     },
 
     created () {
-        this.initialize(),
-        this.firstInit()
+        this.firstInit(),
+        this.initialize()
     },
 
     methods: {
@@ -189,8 +189,8 @@ export default {
         close () {
             this.Verteilung_data.dialog = false
             setTimeout(() => {
-            this.Verteilung_data.editedItem = Object.assign({}, this.Verteilung_data.defaultItem)
-            this.Verteilung_data.editedIndex = -1
+                this.Verteilung_data.editedItem = Object.assign({}, this.Verteilung_data.defaultItem)
+                this.Verteilung_data.editedIndex = -1
             }, 300)
         },
         save () {

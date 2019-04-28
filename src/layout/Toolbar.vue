@@ -7,10 +7,10 @@
             <v-btn flat to="/Verteilung">Verteilung</v-btn>
             <v-flex xs12 sm3 v-if="this.$route.path != '/Verteilung'">
                 <v-select
-                v-model="kw_select"
+                v-model="Toolbar_data.kw_select"
                 hight="20px"
                 class="styled-input"
-                :items="Kalenderwoche"
+                :items="Toolbar_data.Kalenderwoche"
                 prefix="KW"
                 item-value="last"
                 @change="getKW()"
@@ -55,34 +55,20 @@ import {globalStore} from '../main.js'
 export default {
     data() {
         return {
-            Kalenderwoche: [],
-            kw_select: 1
+
         }
     },
     methods: {
         getKW() {
-            globalStore.kw = this.kw_select,
+            globalStore.kw = this.Toolbar_data.kw_select,
             this.getWes(),
             this.getLkws()
 		},
-        get_kws() {
-            axios.get(this.api_link + 'kw')
-            .then(response => {
-                this.Kalenderwoche = response.data,
-                this.kw_select = globalStore.kw
-            })                    
-            .catch(
-                err => {
-                    this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                    this.snack_color = 'error',
-                    this.snackbar = true}
-            );
-        }
     },
     created() {
-        this.get_kws()
-    },
-    props: ['api_link','Wareneingang_data','getWes','getLkws']
+
+},
+    props: ['api_link','Wareneingang_data','getWes','getLkws','get_kws','Toolbar_data']
 }
 </script>
 

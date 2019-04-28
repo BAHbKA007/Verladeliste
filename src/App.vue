@@ -6,6 +6,8 @@
 		:getWes="getWes" 
 		:Wareneingang_data='Wareneingang_data'
 		:getLkws="getLkws"
+        :get_kws="get_kws"
+        :Toolbar_data="Toolbar_data"
 	></Toolbar>
     <v-content>
       <v-container fluid>
@@ -22,6 +24,7 @@
 			:firstInit="firstInit"
 			:getLkws="getLkws"
 			:Lkws_data="Lkws_data"
+            :get_kws="get_kws"
 		>
 		</router-view>
       </v-container>
@@ -43,6 +46,7 @@
 </template>
 
 <script>
+
 import axios from 'axios'
 import Toolbar from './layout/Toolbar.vue'
 import {globalStore} from './main.js'
@@ -56,8 +60,8 @@ export default {
 			kw: globalStore.kw,
             footer_show: true,
             dark: false,
-            api_link: //'http://192.168.178.166/verladeliste-api/public/api/'//
-			'http://localhost/verladeliste-api/public/api/',
+            api_link: 'http://192.168.178.21/verladeliste-api/public/api/',
+			//'http://localhost/verladeliste-api/public/api/',
 
 			Verteilung_data: {
                 kw: globalStore.globalvar,
@@ -191,7 +195,11 @@ export default {
 				dialog: false,
 				editedItem: {},
 				defaultItem: {}
-			}
+            },
+            Toolbar_data: {
+                Kalenderwoche: [],
+                kw_select: 1
+            }
         }
 	},
     methods: {
@@ -272,16 +280,33 @@ export default {
             axios.post(this.api_link + 'lkw/kw', {
 				kw: globalStore.kw
 			})
-                .then(resp => {
-                    this.Lkws_data.lkws = resp.data;
-                })                    
-                .catch(
-                    err => {
-                        this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                        this.Lkws_data.snack_color = 'error',
-                        this.Lkws_data.snackbar = true}
-                    );
+            .then(resp => {
+                this.Lkws_data.lkws = resp.data;
+                this.ber_trasnport()
+            })                    
+            .catch(
+                err => {
+                    this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    this.Lkws_data.snack_color = 'error',
+                    this.Lkws_data.snackbar = true}
+                );
         },
+
+        get_kws() {
+            console.log('get_kws')
+            axios.get(this.api_link + 'kw')
+            .then(response => {
+                this.Toolbar_data.Kalenderwoche = response.data,
+                this.Toolbar_data.kw_select = globalStore.kw
+            })                    
+            .catch(
+                // err => {
+                //     this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                //     this.snack_color = 'error',
+                //     this.snackbar = true}
+            );
+        },
+
         nullen_schneiden(vari) {
             if (vari) {
                 var vari_arr = vari.split('.');
@@ -312,15 +337,52 @@ export default {
                 date = tag[new Date(splited[0],splited[1]-1,splited[2]).getDay()] + ' ' + splited[2] + '.' + splited[1] + '.' + splited[0]
             }
             return date
-        }        
+        },
+        ber_trasnport() {
+            this.Lkws_data.lkws.forEach(lkw => {
+
+                if (lkw.frachtkosten != null) {
+                    lkw.kosten = [];
+                    var paletten = 0;
+                    var kosten_pro_palette = lkw.frachtkosten / 33;
+                    var kosten_pro_abladestelle = {};
+
+                    lkw.wes.forEach(we => {
+                        paletten += parseFloat(we.paletten)
+                        if (we.entladung.name[0] === 'G' && we.entladung.name[1] === 'R' ) {
+                            if (typeof kosten_pro_abladestelle.Gemüsering === 'undefined') { kosten_pro_abladestelle.Gemüsering = 0; kosten_pro_abladestelle.Gemüsering += we.paletten * kosten_pro_palette } else { kosten_pro_abladestelle.Gemüsering += we.paletten * kosten_pro_palette }
+                        } else {
+                            if (!(we.entladung.name in kosten_pro_abladestelle)) { kosten_pro_abladestelle[we.entladung.name] = 0; kosten_pro_abladestelle[we.entladung.name] += we.paletten * kosten_pro_palette }
+                            else { kosten_pro_abladestelle[we.entladung.name] += we.paletten * kosten_pro_palette }
+                        }
+                    });
+
+                    if (paletten < 33) {
+                        kosten_pro_abladestelle.unverteilt = ( 33 - paletten ) * kosten_pro_palette
+                    };
+
+                    Object.keys(kosten_pro_abladestelle).forEach(s => {
+                        var objects = {};
+                        objects.traeger = s;
+                        objects.summe = kosten_pro_abladestelle[s];
+                        // objects[s] = kosten_pro_abladestelle[s];
+                        lkw.kosten.push(objects)
+                    });
+                }
+            });
+        }
+                
+
 	},
 	created(){
-		// //Wareneingang
-		// this.getWes(),
-		// //Verteilung
+		//Wareneingang
+		this.getWes(),
+		//Verteilung
 		this.firstInit()
-		// //Verladeliste
-		// this.getLkws()
+		//Verladeliste
+        this.getLkws()
+        // KWs
+        this.get_kws()
     }
     
 }
