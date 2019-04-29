@@ -10,8 +10,8 @@
                     vertical
                 ></v-divider>
                 <v-spacer></v-spacer>
-                    <div v-for="item in Verteilung_data.where_land_cache" v-bind:key="item" :v-switch="item"><country-flag style="margin: -15px 0 0 0;float:left" :country="Verteilung_data.laender[item-1].land_name" size='normal' />
-                    <v-switch :disabled="switch_disable" v-model="Verteilung_data.where_land" :label="Verteilung_data.laender[item-1].land_name" :value="item" @change="initialize" ></v-switch></div>
+                    <div v-for="item in Verteilung_data.where_land_cache" v-bind:key="item" :v-switch="item"><country-flag style="margin: -15px 0 0 0;float:left" :country="Verteilung_data.laender[item-1].land_name" size='normal' v-if="Verteilung_data.laender.length > 0"/>
+                    <v-switch :disabled="switch_disable" v-model="Verteilung_data.where_land" :label="Verteilung_data.laender[item-1].land_name" :value="item" @change="initialize" v-if="Verteilung_data.laender.length > 0"></v-switch></div>
                 <v-spacer></v-spacer>
                 <v-form ref="form" v-model="Verteilung_data.valid" lazy-validation>
                     <v-dialog v-model="Verteilung_data.dialog" max-width="60%" persistent>
@@ -118,9 +118,6 @@
 <script>
 import CountryFlag from 'vue-country-flag'
 import axios from 'axios';
-import {globalStore} from '../main.js'
-import { constants } from 'crypto';
-
 
 export default {
 
@@ -136,7 +133,8 @@ export default {
 
     created () {
         this.firstInit(),
-        this.initialize()
+        this.initialize(),
+        this.Verteilung_data.verteil = []
     },
 
     methods: {

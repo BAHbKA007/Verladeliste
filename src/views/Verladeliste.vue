@@ -100,7 +100,6 @@
 
 <script>
 import axios from 'axios';
-import {globalStore} from '../main.js'
 
 export default {
     data() {
@@ -138,7 +137,7 @@ export default {
             this.Lkws_data.dialog = true
         },
         onPageChange() {
-            this.getLkws();
+            this.getLkws()
         },
         close() {
             this.Lkws_data.dialog = false
@@ -160,9 +159,11 @@ export default {
                     if (resp.status === 200){
                         this.Lkws_data.snack_text = 'LKW erfolgreich geändert',
                         this.Lkws_data.snack_color = 'success',
-                        this.Lkws_data.snackbar = true
+                        this.Lkws_data.snackbar = true,
+                        this.getLkws(),
+                        this.get_kws()
                     } 
-                    }
+                }
                 )
             .catch(
                 err => {
@@ -178,7 +179,7 @@ export default {
     created() {
         this.getLkws()
     },
-    props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link','getLkws','Lkws_data']
+    props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link','getLkws','Lkws_data','get_kws']
 }
 </script>
 

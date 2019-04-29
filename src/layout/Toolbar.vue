@@ -1,24 +1,21 @@
 <template>
     <v-toolbar dense app>
-
         <v-toolbar-items>
             <v-btn flat to="/">Verladeliste</v-btn>
             <v-btn flat to="/Wareneingang">Wareneingang</v-btn>
             <v-btn flat to="/Verteilung">Verteilung</v-btn>
             <v-flex xs12 sm3 v-if="this.$route.path != '/Verteilung'">
                 <v-select
-                v-model="Toolbar_data.kw_select"
-                hight="20px"
-                class="styled-input"
-                :items="Toolbar_data.Kalenderwoche"
-                prefix="KW"
-                item-value="last"
-                @change="getKW()"
+                    v-model="Toolbar_data.kw_select"
+                    hight="20px"
+                    class="styled-input"
+                    :items="Toolbar_data.Kalenderwoche"
+                    prefix="KW"
+                    item-value="last"
+                    @change="getKW()"
                 ></v-select>
             </v-flex>
         </v-toolbar-items>
-
-
 
         <v-spacer></v-spacer>
 
@@ -49,7 +46,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import {globalStore} from '../main.js'
 
 export default {
@@ -60,6 +56,8 @@ export default {
     },
     methods: {
         getKW() {
+            this.Wareneingang_data.loading = true,
+            this.Wareneingang_data.Wareneingang = [],
             globalStore.kw = this.Toolbar_data.kw_select,
             this.getWes(),
             this.getLkws()

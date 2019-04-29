@@ -1,5 +1,6 @@
 <template>
   <div>
+      
     <v-toolbar flat>
         <v-text-field 
             v-model="Wareneingang_data.search"
@@ -247,6 +248,7 @@
         </tr>
     </template>
     </v-data-table>
+
     <v-snackbar
       v-model="Wareneingang_data.snackbar"
       :color="Wareneingang_data.snack_color"
@@ -268,7 +270,6 @@
 
 <script>
 import axios from 'axios';
-import {globalStore} from '../main.js'
 
 export default {
 watch: {
@@ -282,9 +283,6 @@ created () {
 },
 
 methods: {
-    console(){
-        console.log('keclickt')
-    },
     set_title() {
         this.Wareneingang_data.formTitle = 'Neuen WE anlegen'
     },
@@ -336,13 +334,12 @@ methods: {
         const index = this.Wareneingang_data.Wareneingang.indexOf(item)
         confirm('Wareneingang löschen?') && this.Wareneingang_data.Wareneingang.splice(index, 1)
         axios.delete(this.api_link+'we/'+item.id)
-        .then()
+        .then(this.get_kws())
         .catch(
             err => (
                 this.Wareneingang_data.snack_text = 'Da hat etwas nicht funktioniert :( delete' + err,
                 this.Wareneingang_data.snack_color = 'error',
-                this.Wareneingang_data.snackbar = true)
-            ); /* eslint-disable-line no-console */
+                this.Wareneingang_data.snackbar = true) );
     },
 
     close () {
@@ -354,7 +351,6 @@ methods: {
     },
 
     save () {
-        this.get_kws()
         if (this.$refs.form.validate()) {
                                     
             if (this.Wareneingang_data.editedIndex > -1 && this.Wareneingang_data.formTitle != 'Kopie erstellen') {
@@ -381,7 +377,8 @@ methods: {
                             this.Wareneingang_data.snack_text = 'Wareneingang erfolgreich geändert',
                             this.Wareneingang_data.snack_color = 'success',
                             this.Wareneingang_data.snackbar = true,
-                            this.getWes()
+                            this.getWes(),
+                            this.get_kws()
                         }
                         }
                     )
@@ -417,7 +414,8 @@ methods: {
                         this.Wareneingang_data.snack_text = 'Wareneingang erfolgreich hinzugefügt',
                         this.Wareneingang_data.snack_color = 'success',
                         this.Wareneingang_data.snackbar = true,
-                        this.getWes()
+                        this.getWes(),
+                        this.get_kws()
                     } 
                     }
                 )
@@ -438,7 +436,7 @@ computed: {
         if (this.Wareneingang_data.search != null && this.Wareneingang_data.search.length >= 3) {
             return this.Wareneingang_data.search
         }
-        return
+        return null
     }
 },
 

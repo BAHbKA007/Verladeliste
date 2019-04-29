@@ -9,6 +9,9 @@
         :get_kws="get_kws"
         :Toolbar_data="Toolbar_data"
 	></Toolbar>
+		
+	<v-progress-linear color="primary" v-if="Wareneingang_data.loading" height="4" :indeterminate="true" style="margin: 0;padding: 0; position: fixed; z-index:3"></v-progress-linear>
+
     <v-content>
       <v-container fluid>
         <router-view 
@@ -29,7 +32,7 @@
 		</router-view>
       </v-container>
     </v-content>
-    <v-footer app v-show="footer_show">      
+    <v-footer app v-show="footer_show">  
       <v-container fluid class="pa-0">
         <v-layout row wrap align-center>
           <v-flex xs12 sm12>
@@ -50,7 +53,6 @@
 import axios from 'axios'
 import Toolbar from './layout/Toolbar.vue'
 import {globalStore} from './main.js'
-import { constants } from 'crypto';
 
 
 export default {
@@ -60,7 +62,8 @@ export default {
 			kw: globalStore.kw,
             footer_show: true,
             dark: false,
-            api_link: 'http://192.168.178.21/verladeliste-api/public/api/',
+            api_link: 'http://172.16.28.174/verladeliste-api/public/api/',
+			//'http://192.168.178.21/verladeliste-api/public/api/',
 			//'http://localhost/verladeliste-api/public/api/',
 
 			Verteilung_data: {
@@ -203,10 +206,6 @@ export default {
         }
 	},
     methods: {
-		console(){
-			console.log(this.Verteilung_data)
-		},
-
 		initialize() {
             axios.post(this.api_link + 'we/where',{
                 land_array: this.Verteilung_data.where_land
@@ -265,7 +264,7 @@ export default {
 				kw: globalStore.kw
 			})
 				.then(response => {
-					this.Wareneingang_data.Wareneingang = response.data;
+					this.Wareneingang_data.Wareneingang = response.data
 					// this.pagination.current = response.data.meta.current_page;
 					// this.pagination.total = response.data.meta.last_page;
 				})                    
@@ -281,8 +280,9 @@ export default {
 				kw: globalStore.kw
 			})
             .then(resp => {
-                this.Lkws_data.lkws = resp.data;
-                this.ber_trasnport()
+                this.Lkws_data.lkws = resp.data,
+				this.ber_trasnport(),
+				this.Wareneingang_data.loading = false
             })                    
             .catch(
                 err => {
@@ -293,7 +293,6 @@ export default {
         },
 
         get_kws() {
-            console.log('get_kws')
             axios.get(this.api_link + 'kw')
             .then(response => {
                 this.Toolbar_data.Kalenderwoche = response.data,
@@ -359,7 +358,7 @@ export default {
 
                     if (paletten < 33) {
                         kosten_pro_abladestelle.unverteilt = ( 33 - paletten ) * kosten_pro_palette
-                    };
+                    }
 
                     Object.keys(kosten_pro_abladestelle).forEach(s => {
                         var objects = {};
