@@ -35,8 +35,6 @@ export var globalStore = new Vue({
 })
 Vue.prototype.$globals = globalStore
 
-export const EventBus = new Vue();
-
 
 Vue.component('vue-country-flag', CountryFlag)
 Vue.use(Vuetify, {

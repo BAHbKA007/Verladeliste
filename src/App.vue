@@ -8,6 +8,9 @@
 		:getLkws="getLkws"
         :get_kws="get_kws"
         :Toolbar_data="Toolbar_data"
+		:search_api="search_api"
+		:initialize="initialize"
+		:firstInit="firstInit"
 	></Toolbar>
 		
 	<v-progress-linear color="primary" v-if="Wareneingang_data.loading" height="4" :indeterminate="true" style="margin: 0;padding: 0; position: fixed; z-index:3"></v-progress-linear>
@@ -28,6 +31,7 @@
 			:getLkws="getLkws"
 			:Lkws_data="Lkws_data"
             :get_kws="get_kws"
+			:search_api="search_api"
 		>
 		</router-view>
       </v-container>
@@ -214,11 +218,11 @@ export default {
                 this.Verteilung_data.wes = resp.data
                 })
             .catch(
-                err => (
-                    this.Verteilung_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                    this.Verteilung_data.snack_color = 'error',
-                    this.Verteilung_data.snackbar = true)
-				);
+                // err => (
+                //     this.Verteilung_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                //     this.Verteilung_data.snack_color = 'error',
+				// 	this.Verteilung_data.snackbar = true)
+				)
         },
 
 		// Verteilung first init
@@ -238,10 +242,10 @@ export default {
 				this.Verteilung_data.where_land_cache = element
                 })
             .catch(
-                err => (
-                    this.Verteilung_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                    this.Verteilung_data.snack_color = 'error',
-                    this.Verteilung_data.snackbar = true)
+                // err => (
+                    // this.Verteilung_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    // this.Verteilung_data.snack_color = 'error',
+                    // this.Verteilung_data.snackbar = true)
                 );
 
             // Länder Array holen
@@ -250,10 +254,10 @@ export default {
                 this.Verteilung_data.laender = resp.data
             })
             .catch(
-                err => (
-                    this.Verteilung_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                    this.Verteilung_data.snack_color = 'error',
-                    this.Verteilung_data.snackbar = true)
+                // err => (
+                    // this.Verteilung_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    // this.Verteilung_data.snack_color = 'error',
+                    // this.Verteilung_data.snackbar = true)
 				);
 			this.initialize()
 		},
@@ -270,9 +274,11 @@ export default {
 				})                    
 				.catch(
 					err => {
-						this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-						this.snack_color = 'error',
-						this.snackbar = true}
+						this.Wareneingang_data.loading = false
+						// this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+						// this.snack_color = 'error',
+						// this.snackbar = true
+						}
 				);
 		},
 		getLkws() {
@@ -286,9 +292,11 @@ export default {
             })                    
             .catch(
                 err => {
-                    this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                    this.Lkws_data.snack_color = 'error',
-                    this.Lkws_data.snackbar = true}
+					this.Wareneingang_data.loading = false
+                    // this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    // this.Lkws_data.snack_color = 'error',
+					// this.Lkws_data.snackbar = true
+					}
                 );
         },
 
@@ -299,10 +307,12 @@ export default {
                 this.Toolbar_data.kw_select = globalStore.kw
             })                    
             .catch(
-                // err => {
+                err => {
+					this.Wareneingang_data.loading = false
                 //     this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                 //     this.snack_color = 'error',
-                //     this.snackbar = true}
+				//     this.snackbar = true
+				}
             );
         },
 
@@ -369,8 +379,29 @@ export default {
                     });
                 }
             });
-        }
-                
+		},
+		
+		search_api () {
+			console.log('search_api')
+			// Items have already been loaded
+			// if (this.Wareneingang_data.items_artikel.length > 0 && this.Wareneingang_data.items_lieferant.length > 0 && this.Wareneingang_data.items_gebinde.length > 0 && this.Wareneingang_data.items_entladung.length > 0) {return}
+
+			axios.get(this.api_link+'artikel')
+			.then(res => this.Wareneingang_data.items_artikel = res.data)
+			.catch(err => console.log(err)); /* eslint-disable-line no-console */
+
+			axios.get(this.api_link+'lieferant')
+			.then(res => this.Wareneingang_data.items_lieferant = res.data)
+			.catch(err => console.log(err)); /* eslint-disable-line no-console */
+
+			axios.get(this.api_link+'gebinde')
+			.then(res => this.Wareneingang_data.items_gebinde = res.data)
+			.catch(err => console.log(err)); /* eslint-disable-line no-console */
+
+			axios.get(this.api_link+'entladung')
+			.then(res => this.Wareneingang_data.items_entladung = res.data)
+			.catch(err => console.log(err)) /* eslint-disable-line no-console */
+		}           
 
 	},
 	created(){

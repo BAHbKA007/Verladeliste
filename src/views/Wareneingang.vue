@@ -285,28 +285,7 @@ created () {
 methods: {
     set_title() {
         this.Wareneingang_data.formTitle = 'Neuen WE anlegen'
-    },
-
-    search_api () {
-        // Items have already been loaded
-        // if (this.Wareneingang_data.items_artikel.length > 0 && this.Wareneingang_data.items_lieferant.length > 0 && this.Wareneingang_data.items_gebinde.length > 0 && this.Wareneingang_data.items_entladung.length > 0) {return}
-
-        axios.get(this.api_link+'artikel')
-        .then(res => this.Wareneingang_data.items_artikel = res.data)
-        .catch(err => console.log(err)); /* eslint-disable-line no-console */
-
-        axios.get(this.api_link+'lieferant')
-        .then(res => this.Wareneingang_data.items_lieferant = res.data)
-        .catch(err => console.log(err)); /* eslint-disable-line no-console */
-
-        axios.get(this.api_link+'gebinde')
-        .then(res => this.Wareneingang_data.items_gebinde = res.data)
-        .catch(err => console.log(err)); /* eslint-disable-line no-console */
-
-        axios.get(this.api_link+'entladung')
-        .then(res => this.Wareneingang_data.items_entladung = res.data)
-        .catch(err => console.log(err)) /* eslint-disable-line no-console */
-    },    
+    }, 
 
     check_var_undifined (vari) {
         if (vari) {
@@ -440,7 +419,7 @@ computed: {
     }
 },
 
-props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link','Wareneingang_data','getWes','get_kws']
+props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link','Wareneingang_data','getWes','get_kws','search_api']
 }
 </script>
 

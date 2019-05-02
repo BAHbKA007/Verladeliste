@@ -15,6 +15,7 @@
                     @change="getKW()"
                 ></v-select>
             </v-flex>
+            <v-btn style="margin:0 0 0 10px" flat @click="reload()"><v-icon>sync</v-icon></v-btn>
         </v-toolbar-items>
 
         <v-spacer></v-spacer>
@@ -55,6 +56,15 @@ export default {
         }
     },
     methods: {
+        reload () {
+            this.Wareneingang_data.loading = true,
+            this.getLkws(),
+            this.getWes(),
+            this.get_kws(),
+            this.firstInit(),
+            this.initialize()
+        },
+
         getKW() {
             this.Wareneingang_data.loading = true,
             this.Wareneingang_data.Wareneingang = [],
@@ -66,7 +76,7 @@ export default {
     created() {
 
 },
-    props: ['api_link','Wareneingang_data','getWes','getLkws','get_kws','Toolbar_data']
+    props: ['api_link','Wareneingang_data','getWes','getLkws','get_kws','Toolbar_data','initialize','firstInit']
 }
 </script>
 
