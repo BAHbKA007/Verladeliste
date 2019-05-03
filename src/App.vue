@@ -32,6 +32,7 @@
 			:Lkws_data="Lkws_data"
             :get_kws="get_kws"
 			:search_api="search_api"
+			:lkw_suchen="lkw_suchen"
 		>
 		</router-view>
       </v-container>
@@ -66,9 +67,10 @@ export default {
 			kw: globalStore.kw,
             footer_show: true,
             dark: false,
-            api_link: 'http://172.16.28.174/verladeliste-api/public/api/',
-			//'http://192.168.178.21/verladeliste-api/public/api/',
-			//'http://localhost/verladeliste-api/public/api/',
+			api_link: //'http://192.168.100.137/verladeliste-api/public/api/', // LAN Kabel am Tisch
+			//'http://172.16.28.174/verladeliste-api/public/api/',
+			//'http://192.168.178.21/verladeliste-api/public/api/', // Zuhause PC
+			'http://localhost/verladeliste-api/public/api/',
 
 			Verteilung_data: {
                 kw: globalStore.globalvar,
@@ -174,6 +176,7 @@ export default {
 			},
 
 			Lkws_data: {
+				lkw_suche: '',
 				kw: globalStore.globalvar,
 				headers: [
 					{text: "Produkt", value: "produkt.name", width: "21%", fixed: true, sortable: false, align: 'left'},
@@ -382,7 +385,6 @@ export default {
 		},
 		
 		search_api () {
-			console.log('search_api')
 			// Items have already been loaded
 			// if (this.Wareneingang_data.items_artikel.length > 0 && this.Wareneingang_data.items_lieferant.length > 0 && this.Wareneingang_data.items_gebinde.length > 0 && this.Wareneingang_data.items_entladung.length > 0) {return}
 
@@ -401,8 +403,26 @@ export default {
 			axios.get(this.api_link+'entladung')
 			.then(res => this.Wareneingang_data.items_entladung = res.data)
 			.catch(err => console.log(err)) /* eslint-disable-line no-console */
-		}           
+		},
 
+		lkw_suchen() {
+            axios.post(this.api_link + 'lkw/kw', {
+				kw: this.Lkws_data
+			})
+            .then(resp => {
+                this.Lkws_data.lkws = resp.data,
+				this.ber_trasnport(),
+				this.Wareneingang_data.loading = false
+            })
+            .catch(
+                err => {
+					this.Wareneingang_data.loading = false
+                    // this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    // this.Lkws_data.snack_color = 'error',
+					// this.Lkws_data.snackbar = true
+					}
+            );
+        }
 	},
 	created(){
 		//Wareneingang

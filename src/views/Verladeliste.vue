@@ -1,44 +1,61 @@
 <template>
     <div>
-        <v-dialog v-model="Lkws_data.dialog" max-width="50%" persistent>
-            <v-card>
-                <v-card-title>
-                <span class="headline">LKW bearbeiten</span>
-                </v-card-title>
-                
-                <v-card-text>
-                    <v-container grid-list-md>
-                        <v-layout wrap>
-                            <v-flex xs12 sm6 md4>
-                                <v-text-field v-model="Lkws_data.editedItem.lkw" label="Kennzeichen"></v-text-field>
-                            </v-flex>
-                            <v-flex xs12 sm6 md4>
-                                <v-text-field v-model="Lkws_data.editedItem.spedition" label="Spedition"></v-text-field>
-                            </v-flex>
-                            <v-flex xs12 sm6 md4>
-                                <v-text-field v-model="Lkws_data.editedItem.frachtkosten" prepend-icon="euro_symbol" type="number" label="Frachtkosten"></v-text-field>
-                            </v-flex>
-                            <v-flex xs12 sm6 md12>
-                                <v-textarea
-                                    v-model="Lkws_data.editedItem.kommentar"
-                                    label="Kommentar"
-                                    counter
-                                    maxlength="191"
-                                ></v-textarea>
-                            </v-flex>                        
-                        </v-layout>
-                    </v-container>
-                </v-card-text>
+        <v-toolbar flat>
+            <v-text-field
+                v-model="Lkws_data.lkw_suche"
+                prepend-icon="search"
+                label="LKW suchen"
+                single-line
+                hide-details
+                clearable
+                @keyup.enter="lkw_suchen()"
+            ></v-text-field>
+            <v-btn @click="lkw_suchen()">suchen</v-btn>
+        <v-divider
+            class="mx-2"
+            inset
+            vertical
+        ></v-divider>
+        <div> </div>
+            <v-dialog v-model="Lkws_data.dialog" max-width="50%" persistent>
+                <v-card>
+                    <v-card-title>
+                    <span class="headline">LKW bearbeiten</span>
+                    </v-card-title>
+                    
+                    <v-card-text>
+                        <v-container grid-list-md>
+                            <v-layout wrap>
+                                <v-flex xs12 sm6 md4>
+                                    <v-text-field v-model="Lkws_data.editedItem.lkw" label="Kennzeichen"></v-text-field>
+                                </v-flex>
+                                <v-flex xs12 sm6 md4>
+                                    <v-text-field v-model="Lkws_data.editedItem.spedition" label="Spedition"></v-text-field>
+                                </v-flex>
+                                <v-flex xs12 sm6 md4>
+                                    <v-text-field v-model="Lkws_data.editedItem.frachtkosten" prepend-icon="euro_symbol" type="number" label="Frachtkosten"></v-text-field>
+                                </v-flex>
+                                <v-flex xs12 sm6 md12>
+                                    <v-textarea
+                                        v-model="Lkws_data.editedItem.kommentar"
+                                        label="Kommentar"
+                                        counter
+                                        maxlength="191"
+                                    ></v-textarea>
+                                </v-flex>                        
+                            </v-layout>
+                        </v-container>
+                    </v-card-text>
 
-                <v-card-actions>
-                    <v-btn color="red darken-1" flat @click="del(Lkws_data.editedItem)">löschen</v-btn>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" flat @click="close">abbrechen</v-btn>
-                    <v-btn color="blue darken-1" flat @click="save">speichern</v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-
+                    <v-card-actions>
+                        <v-btn color="red darken-1" flat @click="del(Lkws_data.editedItem)">löschen</v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" flat @click="close">abbrechen</v-btn>
+                        <v-btn color="blue darken-1" flat @click="save">speichern</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+        </v-toolbar>
         <div v-for="item in this.Lkws_data.lkws" v-bind:key="item.id" :style="{backgroundColor: colors(item.ankunft)}" @click="editLkws(item)" style="cursor: pointer">
             <div class="head">
                 <div>
@@ -104,7 +121,7 @@ import axios from 'axios';
 export default {
     data() {
         return {
-
+            lkw_suche: ''
         }
     },
     methods: {
@@ -179,7 +196,7 @@ export default {
     created() {
         this.getLkws()
     },
-    props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link','getLkws','Lkws_data','get_kws']
+    props: ['punkt_zu_komma','nullen_schneiden','colors','show_de_date','api_link','getLkws','Lkws_data','get_kws','lkw_suchen']
 }
 </script>
 
