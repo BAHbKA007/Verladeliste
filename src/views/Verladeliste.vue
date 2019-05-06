@@ -121,7 +121,6 @@ import axios from 'axios';
 export default {
     data() {
         return {
-            lkw_suche: ''
         }
     },
     methods: {

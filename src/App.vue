@@ -5,6 +5,7 @@
 		:api_link='api_link' 
 		:getWes="getWes" 
 		:Wareneingang_data='Wareneingang_data'
+		:Verteilung_data="Verteilung_data"
 		:getLkws="getLkws"
         :get_kws="get_kws"
         :Toolbar_data="Toolbar_data"
@@ -406,13 +407,12 @@ export default {
 		},
 
 		lkw_suchen() {
-            axios.post(this.api_link + 'lkw/kw', {
-				kw: this.Lkws_data
+            axios.post(this.api_link + 'lkw_suchen', {
+				lkw_suche: this.Lkws_data.lkw_suche,
+				kw: globalStore.kw
 			})
             .then(resp => {
-                this.Lkws_data.lkws = resp.data,
-				this.ber_trasnport(),
-				this.Wareneingang_data.loading = false
+                this.Lkws_data.lkws = resp.data
             })
             .catch(
                 err => {

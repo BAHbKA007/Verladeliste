@@ -58,6 +58,7 @@ export default {
     methods: {
         reload () {
             this.Wareneingang_data.loading = true,
+            this.Verteilung_data.verteil = [],
             this.getLkws(),
             this.getWes(),
             this.get_kws(),
@@ -76,7 +77,7 @@ export default {
     created() {
 
 },
-    props: ['api_link','Wareneingang_data','getWes','getLkws','get_kws','Toolbar_data','initialize','firstInit']
+    props: ['api_link','Wareneingang_data','getWes','getLkws','get_kws','Toolbar_data','initialize','firstInit','Verteilung_data']
 }
 </script>
 
