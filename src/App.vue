@@ -278,12 +278,12 @@ export default {
 					// this.pagination.total = response.data.meta.last_page;
 				})                    
 				.catch(
-					this.Wareneingang_data.loading = false
-					// err => {
-					// 	this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-					// 	this.snack_color = 'error',
-					// 	this.snackbar = true
-					// 	}
+					err => {
+						this.Wareneingang_data.loading = false
+						// this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+						// this.snack_color = 'error',
+						// this.snackbar = true
+						}
 				);
 		},
 		getLkws() {
@@ -296,13 +296,12 @@ export default {
 				this.Wareneingang_data.loading = false
             })                    
             .catch(
-				this.Wareneingang_data.loading = false
-                // err => {
-				// 	err = true
-                //     this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                //     this.Lkws_data.snack_color = 'error',
-				// 	this.Lkws_data.snackbar = true
-				// 	}
+                err => {
+					this.Wareneingang_data.loading = false
+                    // this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    // this.Lkws_data.snack_color = 'error',
+					// this.Lkws_data.snackbar = true
+					}
                 );
         },
 
@@ -313,12 +312,12 @@ export default {
                 this.Toolbar_data.kw_select = globalStore.kw
             })                    
             .catch(
-				this.Wareneingang_data.loading = false
-                // err => {
+                err => {
+					this.Wareneingang_data.loading = false
                 //     this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                 //     this.snack_color = 'error',
 				//     this.snackbar = true
-				// }
+				}
             );
         },
 
@@ -409,20 +408,22 @@ export default {
 		},
 
 		lkw_suchen() {
+			this.Wareneingang_data.loading = true
             axios.post(this.api_link + 'lkw_suchen', {
 				lkw_suche: this.Lkws_data.lkw_suche,
 				kw: globalStore.kw
 			})
             .then(resp => {
-                this.Lkws_data.lkws = resp.data
+				this.Lkws_data.lkws = resp.data,
+				this.Wareneingang_data.loading = false
             })
             .catch(
-				this.Wareneingang_data.loading = false
-                // err => {
-                //     this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                //     this.Lkws_data.snack_color = 'error',
-				// 	this.Lkws_data.snackbar = true
-				// 	}
+                err => {
+					this.Wareneingang_data.loading = false
+                    // this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                    // this.Lkws_data.snack_color = 'error',
+					// this.Lkws_data.snackbar = true
+					}
             );
         }
 	},
