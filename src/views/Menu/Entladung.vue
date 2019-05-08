@@ -136,9 +136,13 @@ import axios from 'axios';
 
     methods: {
         initialize () {
+          this.Wareneingang_data.loading = true;
             axios.get(this.api_link + 'entladung')
-            .then(res => this.Entladung = res.data)
-            .catch(err => console.log(err)); /* eslint-disable-line no-console */
+            .then(res => {
+              this.Entladung = res.data,
+              this.Wareneingang_data.loading = false
+            })
+            .catch(err => this.Wareneingang_data.loading = false); /* eslint-disable-line no-console */
         },
 
         editItem (item) {
@@ -211,9 +215,7 @@ import axios from 'axios';
             this.close()
         }
     },    
-    props: {
-      api_link: String
-    }
+    props: ['api_link','Wareneingang_data']
 }
 </script>
 

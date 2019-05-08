@@ -137,12 +137,17 @@ import axios from 'axios';
 
     methods: {
         initialize () {
+          this.Wareneingang_data.loading = true;
             axios.get(this.api_link+'gebinde')
-            .then(res => this.Gebinde = res.data)
+            .then(res => {
+              this.Gebinde = res.data,
+              this.Wareneingang_data.loading = false
+            })
             .catch(err => {
                 this.snack_text = 'Da hat etwas nicht funktioniert :(' + err,
                 this.snack_color = 'error',
-                this.snackbar = true
+                this.snackbar = true,
+                this.Wareneingang_data.loading = false
             });
         },
 
@@ -221,9 +226,7 @@ import axios from 'axios';
             this.close()
         }
     },
-    props: {
-      api_link: String
-    }
+    props: ['api_link','Wareneingang_data']
 }
 </script>
 

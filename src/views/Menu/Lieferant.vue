@@ -224,9 +224,14 @@ export default {
         },
 
         initialize () {
+            this.Wareneingang_data.loading = true,
             axios.get(this.api_link+'lieferant')
-            .then(res => this.Lieferant = res.data)
+            .then(res => {
+                this.Lieferant = res.data,
+                this.Wareneingang_data.loading = false
+            })
             .catch(err => {
+                this.Wareneingang_data.loading = false
                 this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                 this.snack_color = 'error',
                 this.snackbar = true                
@@ -316,9 +321,7 @@ export default {
             }
         }
     },
-    props: {
-      api_link: String
-    }
+    props: ['api_link','Wareneingang_data']
 }
 </script>
 
