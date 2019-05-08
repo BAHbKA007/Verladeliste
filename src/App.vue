@@ -71,7 +71,8 @@ export default {
 			api_link: //'http://192.168.100.137/verladeliste-api/public/api/', // LAN Kabel am Tisch
 			//'http://172.16.28.174/verladeliste-api/public/api/',
 			//'http://192.168.178.21/verladeliste-api/public/api/', // Zuhause PC
-			'http://localhost/verladeliste-api/public/api/',
+			//'http://localhost/verladeliste-api/public/api/',
+			'http://api.werner-ebert.de/api/',
 
 			Verteilung_data: {
                 kw: globalStore.globalvar,
@@ -277,12 +278,12 @@ export default {
 					// this.pagination.total = response.data.meta.last_page;
 				})                    
 				.catch(
-					err => {
-						this.Wareneingang_data.loading = false
-						// this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-						// this.snack_color = 'error',
-						// this.snackbar = true
-						}
+					this.Wareneingang_data.loading = false
+					// err => {
+					// 	this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+					// 	this.snack_color = 'error',
+					// 	this.snackbar = true
+					// 	}
 				);
 		},
 		getLkws() {
@@ -295,12 +296,13 @@ export default {
 				this.Wareneingang_data.loading = false
             })                    
             .catch(
-                err => {
-					this.Wareneingang_data.loading = false
-                    // this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                    // this.Lkws_data.snack_color = 'error',
-					// this.Lkws_data.snackbar = true
-					}
+				this.Wareneingang_data.loading = false
+                // err => {
+				// 	err = true
+                //     this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                //     this.Lkws_data.snack_color = 'error',
+				// 	this.Lkws_data.snackbar = true
+				// 	}
                 );
         },
 
@@ -311,12 +313,12 @@ export default {
                 this.Toolbar_data.kw_select = globalStore.kw
             })                    
             .catch(
-                err => {
-					this.Wareneingang_data.loading = false
+				this.Wareneingang_data.loading = false
+                // err => {
                 //     this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                 //     this.snack_color = 'error',
 				//     this.snackbar = true
-				}
+				// }
             );
         },
 
@@ -415,12 +417,12 @@ export default {
                 this.Lkws_data.lkws = resp.data
             })
             .catch(
-                err => {
-					this.Wareneingang_data.loading = false
-                    // this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
-                    // this.Lkws_data.snack_color = 'error',
-					// this.Lkws_data.snackbar = true
-					}
+				this.Wareneingang_data.loading = false
+                // err => {
+                //     this.Lkws_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
+                //     this.Lkws_data.snack_color = 'error',
+				// 	this.Lkws_data.snackbar = true
+				// 	}
             );
         }
 	},
