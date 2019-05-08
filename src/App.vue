@@ -216,13 +216,16 @@ export default {
 	},
     methods: {
 		initialize() {
+			this.Wareneingang_data.loading = true
             axios.post(this.api_link + 'we/where',{
                 land_array: this.Verteilung_data.where_land
             })
             .then(resp => {
-                this.Verteilung_data.wes = resp.data
+				this.Verteilung_data.wes = resp.data
+				this.Wareneingang_data.loading = false
                 })
             .catch(
+				this.Wareneingang_data.loading = false
                 // err => (
                 //     this.Verteilung_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                 //     this.Verteilung_data.snack_color = 'error',
@@ -232,7 +235,7 @@ export default {
 
 		// Verteilung first init
         firstInit() {
-
+			this.Wareneingang_data.loading = true;
             axios.get(this.api_link + 'we/where/first')
             .then(resp => {
                 this.Verteilung_data.wes = resp.data
@@ -245,8 +248,10 @@ export default {
 
                 this.Verteilung_data.where_land = element
 				this.Verteilung_data.where_land_cache = element
+				this.Wareneingang_data.loading = false
                 })
             .catch(
+				this.Wareneingang_data.loading = false
                 // err => (
                     // this.Verteilung_data.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                     // this.Verteilung_data.snack_color = 'error',
@@ -268,12 +273,14 @@ export default {
 		},
 		
 		getWes() {
+			this.Wareneingang_data.loading = true;
 			//axios.get(this.api_link + 'we?page=' + this.pagination.current)
 			axios.post(this.api_link + 'kw',{
 				kw: globalStore.kw
 			})
 				.then(response => {
 					this.Wareneingang_data.Wareneingang = response.data
+					this.Wareneingang_data.loading = false
 					// this.pagination.current = response.data.meta.current_page;
 					// this.pagination.total = response.data.meta.last_page;
 				})                    
@@ -287,6 +294,7 @@ export default {
 				);
 		},
 		getLkws() {
+			this.Wareneingang_data.loading = true;
             axios.post(this.api_link + 'lkw/kw', {
 				kw: globalStore.kw
 			})
@@ -306,14 +314,16 @@ export default {
         },
 
         get_kws() {
+			//this.Wareneingang_data.loading = true;
             axios.get(this.api_link + 'kw')
             .then(response => {
                 this.Toolbar_data.Kalenderwoche = response.data,
-                this.Toolbar_data.kw_select = globalStore.kw
+				this.Toolbar_data.kw_select = globalStore.kw
+				this.Wareneingang_data.loading = false
             })                    
             .catch(
                 err => {
-					this.Wareneingang_data.loading = false
+				//	this.Wareneingang_data.loading = false
                 //     this.snack_text = 'Da hat etwas nicht funktioniert :( ' + err,
                 //     this.snack_color = 'error',
 				//     this.snackbar = true
